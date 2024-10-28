@@ -68,5 +68,4 @@ jobs:
         shell: bash
         run: |
           echo "shell: ${{ steps.test-action.outputs.shell }}"
-          echo "json: ${{ steps.test-action.outputs.json }}"
           echo "escaped-json: ${{ steps.test-action.outputs.escaped-json }}"
