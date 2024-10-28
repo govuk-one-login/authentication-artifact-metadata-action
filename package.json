@@ -1,7 +1,7 @@
 {
-  "name": "typescript-action",
-  "description": "GitHub Actions TypeScript template",
-  "version": "0.0.0",
+  "name": "authentication-artifact-metadata-action",
+  "description": "Gather PR / commit metadata, to attach to build artifacts",
+  "version": "0.0.1",
   "author": "",
   "private": true,
   "homepage": "https://github.com/actions/typescript-action",
@@ -23,6 +23,7 @@
   "engines": {
     "node": ">=21"
   },
+  "type": "module",
   "scripts": {
     "bundle": "npm run format:write && npm run package",
     "ci-test": "npx jest",
@@ -42,6 +43,7 @@
     "verbose": true,
     "clearMocks": true,
     "testEnvironment": "node",
+    "resolver": "ts-jest-resolver",
     "moduleFileExtensions": [
       "js",
       "ts"
@@ -67,7 +69,11 @@
     ]
   },
   "dependencies": {
-    "@actions/core": "^1.11.1"
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^6.0.0",
+    "@octokit/graphql": "^8.1.1",
+    "@octokit/graphql-schema": "^15.25.0",
+    "shescape": "^2.1.1"
   },
   "devDependencies": {
     "@github/local-action": "^2.1.2",
@@ -78,6 +84,7 @@
     "@typescript-eslint/parser": "^8.10.0",
     "@vercel/ncc": "^0.38.2",
     "eslint": "^8.57.0",
+    "eslint-import-resolver-typescript": "^3.6.3",
     "eslint-plugin-jest": "^28.8.3",
     "eslint-plugin-jsonc": "^2.16.0",
     "eslint-plugin-prettier": "^5.2.1",
@@ -86,6 +93,7 @@
     "prettier": "^3.3.3",
     "prettier-eslint": "^16.3.0",
     "ts-jest": "^29.2.5",
+    "ts-jest-resolver": "^2.0.1",
     "typescript": "^5.6.3"
   }
 }

@@ -1,23 +1,25 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Artifact Metadata'
+description: 'Gather PR / commit metadata, to be used in other actions.'
+author: 'govuk-one-login'
 
-# Add your action's branding here. This will appear on the GitHub Marketplace.
-branding:
-  icon: 'heart'
-  color: 'red'
-
-# Define your inputs here.
 inputs:
-  milliseconds:
-    description: 'Your input description here'
+  github-token:
+    description: 'The GitHub token to use for API requests.'
     required: true
-    default: '1000'
+  shell:
+    description: 'The shell to escape for'
+    required: true
+    default: 'bash'
 
-# Define your outputs here.
 outputs:
-  time:
-    description: 'Your output description here'
+  json:
+    description: 'A JSON object containing metadata about the PR / commit.'
+  escaped-json:
+    description:
+      'A JSON object containing metadata about the PR / commit, with special
+      characters escaped.'
+  shell:
+    description: 'The shell escaped-json was escaped for.'
 
 runs:
   using: node20

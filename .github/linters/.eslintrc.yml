@@ -62,3 +62,9 @@ rules:
     '@typescript-eslint/require-array-sort-compare': 'error',
     '@typescript-eslint/space-before-function-paren': 'off'
   }
+
+settings:
+  import/resolver:
+    typescript:
+      alwaysTryTypes: true
+      project: './.github/linters/tsconfig.json'
