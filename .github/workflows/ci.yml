@@ -47,6 +47,9 @@ jobs:
   test-action:
     name: GitHub Actions Test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
 
     steps:
       - name: Checkout
@@ -57,8 +60,13 @@ jobs:
         id: test-action
         uses: ./
         with:
-          milliseconds: 2000
+          shell: bash
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Print Output
         id: output
-        run: echo "${{ steps.test-action.outputs.time }}"
+        shell: bash
+        run: |
+          echo "shell: ${{ steps.test-action.outputs.shell }}"
+          echo "json: ${{ steps.test-action.outputs.json }}"
+          echo "escaped-json: ${{ steps.test-action.outputs.escaped-json }}"
