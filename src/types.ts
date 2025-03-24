@@ -44,4 +44,4 @@ type PRMetadata = {
   'codepipeline-artifact-revision-summary': string
 }
 
-export { QueryResponse, PRMetadata, PRNode }
+export { PRMetadata, PRNode, QueryResponse }

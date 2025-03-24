@@ -3,7 +3,7 @@ import * as github from '@actions/github'
 
 import { Shescape } from 'shescape'
 
-import { QueryResponse, PRMetadata, PRNode } from './types.js'
+import { PRMetadata, PRNode, QueryResponse } from './types.js'
 
 const query = `query ($owner: String!, $name: String!, $oid: GitObjectID!) {
   repository(owner: $owner, name: $name) {
@@ -32,14 +32,14 @@ const query = `query ($owner: String!, $name: String!, $oid: GitObjectID!) {
   }
 }`
 
-function getGraphqlVariables(): Record<string, string> {
+export function getGraphqlVariables(): Record<string, string> {
   const { owner, repo } = github.context.repo
   const oid = github.context.sha
 
   return { owner, name: repo, oid }
 }
 
-function sanitizeField(value?: string): string {
+export function sanitizeField(value?: string): string {
   if (value == undefined) {
     return ''
   }
@@ -47,7 +47,7 @@ function sanitizeField(value?: string): string {
   return value.replace(/[^\x20-\x7E]/g, '')
 }
 
-function createInitialMetadata(response: QueryResponse): PRMetadata {
+export function createInitialMetadata(response: QueryResponse): PRMetadata {
   const firstLineOfCommitMessage =
     response.repository.object.message.split('\n')[0]
 
@@ -75,13 +75,19 @@ function createInitialMetadata(response: QueryResponse): PRMetadata {
   }
 }
 
-function updateMetadataFromPR(metadata: PRMetadata, pr: PRNode): void {
-  const shortMergeCommitSha = pr.mergeCommit.oid.substring(0, 7)
+export function updateMetadataFromPR(metadata: PRMetadata, pr: PRNode): void {
+  let shortMergeCommitSha = ''
+  let mergeCommitOid = ''
+
+  if (pr.mergeCommit) {
+    mergeCommitOid = pr.mergeCommit.oid
+    shortMergeCommitSha = mergeCommitOid.substring(0, 7)
+  }
 
   metadata.pr_number = sanitizeField(pr.number.toString())
   metadata.pr_title = sanitizeField(pr.title)
-  metadata.pr_merged_at = sanitizeField(pr.mergedAt)
-  metadata.pr_merge_commit_sha = sanitizeField(pr.mergeCommit.oid)
+  metadata.pr_merged_at = sanitizeField(pr.mergedAt ?? undefined)
+  metadata.pr_merge_commit_sha = sanitizeField(mergeCommitOid)
   metadata.commitmessage = sanitizeField(pr.title)
   metadata['codepipeline-artifact-revision-summary'] = sanitizeField(
     `${shortMergeCommitSha}: #${pr.number} (${metadata.repo_full_name}) - ${pr.title}`
