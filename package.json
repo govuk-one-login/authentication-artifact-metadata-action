@@ -73,7 +73,7 @@
     "@actions/github": "^6.0.0",
     "@octokit/graphql": "^8.1.1",
     "@octokit/graphql-schema": "^15.25.0",
-    "shescape": "^2.1.1"
+    "shescape": "^2.1.2"
   },
   "devDependencies": {
     "@github/local-action": "^2.1.3",
