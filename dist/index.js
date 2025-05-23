@@ -1871,7 +1871,6 @@ class Context {
         this.action = process.env.GITHUB_ACTION;
         this.actor = process.env.GITHUB_ACTOR;
         this.job = process.env.GITHUB_JOB;
-        this.runAttempt = parseInt(process.env.GITHUB_RUN_ATTEMPT, 10);
         this.runNumber = parseInt(process.env.GITHUB_RUN_NUMBER, 10);
         this.runId = parseInt(process.env.GITHUB_RUN_ID, 10);
         this.apiUrl = (_a = process.env.GITHUB_API_URL) !== null && _a !== void 0 ? _a : `https://api.github.com`;
@@ -2375,7 +2374,7 @@ module.exports = __toCommonJS(dist_src_exports);
 var import_universal_user_agent = __nccwpck_require__(7900);
 
 // pkg/dist-src/version.js
-var VERSION = "9.0.6";
+var VERSION = "9.0.5";
 
 // pkg/dist-src/defaults.js
 var userAgent = `octokit-endpoint.js/${VERSION} ${(0, import_universal_user_agent.getUserAgent)()}`;
@@ -2480,9 +2479,9 @@ function addQueryParameters(url, parameters) {
 }
 
 // pkg/dist-src/util/extract-url-variable-names.js
-var urlVariableRegex = /\{[^{}}]+\}/g;
+var urlVariableRegex = /\{[^}]+\}/g;
 function removeNonChars(variableName) {
-  return variableName.replace(/(?:^\W+)|(?:(?<!\W)\W+$)/g, "").split(/,/);
+  return variableName.replace(/^\W+|\W+$/g, "").split(/,/);
 }
 function extractUrlVariableNames(url) {
   const matches = url.match(urlVariableRegex);
@@ -2668,7 +2667,7 @@ function parse(options) {
     }
     if (url.endsWith("/graphql")) {
       if (options.mediaType.previews?.length) {
-        const previewsFromAcceptHeader = headers.accept.match(/(?<![\w-])[\w-]+(?=-preview)/g) || [];
+        const previewsFromAcceptHeader = headers.accept.match(/[\w-]+(?=-preview)/g) || [];
         headers.accept = previewsFromAcceptHeader.concat(options.mediaType.previews).map((preview) => {
           const format = options.mediaType.format ? `.${options.mediaType.format}` : "+json";
           return `application/vnd.github.${preview}-preview${format}`;
@@ -2915,7 +2914,7 @@ __export(dist_src_exports, {
 module.exports = __toCommonJS(dist_src_exports);
 
 // pkg/dist-src/version.js
-var VERSION = "9.2.2";
+var VERSION = "9.2.1";
 
 // pkg/dist-src/normalize-paginated-list-response.js
 function normalizePaginatedListResponse(response) {
@@ -2963,7 +2962,7 @@ function iterator(octokit, route, parameters) {
           const response = await requestMethod({ method, url, headers });
           const normalizedResponse = normalizePaginatedListResponse(response);
           url = ((normalizedResponse.headers.link || "").match(
-            /<([^<>]+)>;\s*rel="next"/
+            /<([^>]+)>;\s*rel="next"/
           ) || [])[1];
           return { value: normalizedResponse };
         } catch (error) {
@@ -5513,7 +5512,7 @@ var RequestError = class extends Error {
     if (options.request.headers.authorization) {
       requestCopy.headers = Object.assign({}, options.request.headers, {
         authorization: options.request.headers.authorization.replace(
-          /(?<! ) .*$/,
+          / .*$/,
           " [REDACTED]"
         )
       });
@@ -5580,7 +5579,7 @@ var import_endpoint = __nccwpck_require__(4806);
 var import_universal_user_agent = __nccwpck_require__(7900);
 
 // pkg/dist-src/version.js
-var VERSION = "8.4.1";
+var VERSION = "8.4.0";
 
 // pkg/dist-src/is-plain-object.js
 function isPlainObject(value) {
@@ -5639,7 +5638,7 @@ function fetchWrapper(requestOptions) {
       headers[keyAndValue[0]] = keyAndValue[1];
     }
     if ("deprecation" in headers) {
-      const matches = headers.link && headers.link.match(/<([^<>]+)>; rel="deprecation"/);
+      const matches = headers.link && headers.link.match(/<([^>]+)>; rel="deprecation"/);
       const deprecationLink = matches && matches.pop();
       log.warn(
         `[@octokit/request] "${requestOptions.method} ${requestOptions.url}" is deprecated. It is scheduled to be removed on ${headers.sunset}${deprecationLink ? `. See ${deprecationLink}` : ""}`
@@ -32173,7 +32172,7 @@ function resolveExecutable(
         ? env.Path
         : undefined;
     resolved = which(resolved, { path });
-  } catch {
+  } catch (_) {
     throw new Error(notFoundError(executable));
   }
 
@@ -32183,7 +32182,7 @@ function resolveExecutable(
 
   try {
     resolved = readlink(resolved);
-  } catch {
+  } catch (_) {
     // An error will be thrown if the executable is not a (sym)link, this is not
     // a problem so the error is ignored
   }
@@ -32759,21 +32758,16 @@ function getDefaultShell() {
  */
 function unix_getEscapeFunction(shellName) {
   switch (shellName) {
-    case noShell: {
+    case noShell:
       return no_shell_getEscapeFunction();
-    }
-    case binBash: {
+    case binBash:
       return getEscapeFunction();
-    }
-    case binCsh: {
+    case binCsh:
       return csh_getEscapeFunction();
-    }
-    case binDash: {
+    case binDash:
       return dash_getEscapeFunction();
-    }
-    case binZsh: {
+    case binZsh:
       return zsh_getEscapeFunction();
-    }
   }
 }
 
@@ -32786,21 +32780,16 @@ function unix_getEscapeFunction(shellName) {
  */
 function unix_getQuoteFunction(shellName) {
   switch (shellName) {
-    case noShell: {
+    case noShell:
       return no_shell_getQuoteFunction();
-    }
-    case binBash: {
+    case binBash:
       return getQuoteFunction();
-    }
-    case binCsh: {
+    case binCsh:
       return csh_getQuoteFunction();
-    }
-    case binDash: {
+    case binDash:
       return dash_getQuoteFunction();
-    }
-    case binZsh: {
+    case binZsh:
       return zsh_getQuoteFunction();
-    }
   }
 }
 
@@ -32812,21 +32801,16 @@ function unix_getQuoteFunction(shellName) {
  */
 function unix_getFlagProtectionFunction(shellName) {
   switch (shellName) {
-    case noShell: {
+    case noShell:
       return no_shell_getFlagProtectionFunction();
-    }
-    case binBash: {
+    case binBash:
       return getFlagProtectionFunction();
-    }
-    case binCsh: {
+    case binCsh:
       return csh_getFlagProtectionFunction();
-    }
-    case binDash: {
+    case binDash:
       return dash_getFlagProtectionFunction();
-    }
-    case binZsh: {
+    case binZsh:
       return zsh_getFlagProtectionFunction();
-    }
   }
 }
 
@@ -32873,11 +32857,29 @@ function isShellSupported(shellName) {
  * @returns {string} The escaped argument.
  */
 function cmd_escapeArg(arg) {
+  let shouldEscapeSpecialChar = true;
   return arg
     .replace(/[\0\u0008\r\u001B\u009B]/gu, "")
     .replace(/\n/gu, " ")
     .replace(/(?<!\\)(\\*)"/gu, '$1$1\\"')
-    .replace(/(["%&<>^|])/gu, "^$1");
+    .split("")
+    .map(
+      // Due to the way CMD determines if it is inside a quoted section, and the
+      // way we escape double quotes, whether or not special character need to
+      // be escaped depends on the number of double quotes that proceed it. So,
+      // we flip a flag for every double quote we encounter and escape special
+      // characters conditionally on that flag.
+      (char) => {
+        if (char === '"') {
+          shouldEscapeSpecialChar = !shouldEscapeSpecialChar;
+        } else if (shouldEscapeSpecialChar && /[%&<>^|]/u.test(char)) {
+          return `^${char}`;
+        }
+
+        return char;
+      },
+    )
+    .join("");
 }
 
 /**
@@ -33180,12 +33182,10 @@ function win_getEscapeFunction(shellName) {
   }
 
   switch (shellName.toLowerCase()) {
-    case binCmd: {
+    case binCmd:
       return cmd_getEscapeFunction();
-    }
-    case binPowerShell: {
+    case binPowerShell:
       return powershell_getEscapeFunction();
-    }
   }
 }
 
@@ -33202,12 +33202,10 @@ function win_getQuoteFunction(shellName) {
   }
 
   switch (shellName.toLowerCase()) {
-    case binCmd: {
+    case binCmd:
       return cmd_getQuoteFunction();
-    }
-    case binPowerShell: {
+    case binPowerShell:
       return powershell_getQuoteFunction();
-    }
   }
 }
 
@@ -33223,12 +33221,10 @@ function win_getFlagProtectionFunction(shellName) {
   }
 
   switch (shellName.toLowerCase()) {
-    case binCmd: {
+    case binCmd:
       return cmd_getFlagProtectionFunction();
-    }
-    case binPowerShell: {
+    case binPowerShell:
       return powershell_getFlagProtectionFunction();
-    }
   }
 }
 
@@ -33333,7 +33329,7 @@ function getHelpersByPlatform({ env, platform }) {
  *
  * @overview Entrypoint for the library.
  * @module shescape
- * @version 2.1.3
+ * @version 2.1.1
  * @license MPL-2.0
  */
 
