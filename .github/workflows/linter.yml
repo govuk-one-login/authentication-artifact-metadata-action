@@ -36,6 +36,10 @@ jobs:
         id: install
         run: npm ci
 
+      - name: Run node linting
+        id: lint-node
+        run: npm run lint
+
       - name: Lint Codebase
         id: super-linter
         uses: super-linter/super-linter/slim@12150456a73e248bdc94d0794898f94e23127c88 # v7.4.0
