@@ -3,7 +3,7 @@ import * as github from '@actions/github'
 
 import { Shescape } from 'shescape'
 
-import { QueryResponse, PRMetadata, PRNode } from './types.js'
+import { PRMetadata, PRNode, QueryResponse } from './types.js'
 
 const query = `query ($owner: String!, $name: String!, $oid: GitObjectID!) {
   repository(owner: $owner, name: $name) {
