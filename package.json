@@ -1,7 +1,7 @@
 {
   "name": "authentication-artifact-metadata-action",
   "description": "Gather PR / commit metadata, to attach to build artifacts",
-  "version": "0.0.1",
+  "version": "v1.0.0",
   "author": "",
   "type": "module",
   "private": true,
