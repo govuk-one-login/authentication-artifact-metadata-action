@@ -48,8 +48,8 @@
   "dependencies": {
     "@actions/core": "^3.0.0",
     "@actions/github": "^9.0.0",
-    "@octokit/graphql": "^9.0.1",
-    "@octokit/graphql-schema": "^15.26.0",
+    "@octokit/graphql": "^9.0.3",
+    "@octokit/graphql-schema": "^15.26.1",
     "shescape": "^2.1.10"
   },
   "devDependencies": {
