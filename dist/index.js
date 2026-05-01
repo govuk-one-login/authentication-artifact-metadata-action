@@ -2,7 +2,7 @@ import * as os from 'os';
 import os__default, { EOL } from 'os';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
-import fs__default, { promises, existsSync, readFileSync } from 'fs';
+import fs__default, { promises, existsSync as existsSync$1, readFileSync } from 'fs';
 import path$1 from 'path';
 import http from 'http';
 import https from 'https';
@@ -34,8 +34,8 @@ import 'child_process';
 import 'timers';
 import os$1 from 'node:os';
 import process$1 from 'node:process';
-import * as fs$1 from 'node:fs';
 import * as path from 'node:path';
+import * as fs$1 from 'node:fs';
 
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -2714,15 +2714,23 @@ function requireDispatcherBase () {
 	const kOnDestroyed = Symbol('onDestroyed');
 	const kOnClosed = Symbol('onClosed');
 	const kInterceptedDispatch = Symbol('Intercepted Dispatch');
+	const kWebSocketOptions = Symbol('webSocketOptions');
 
 	class DispatcherBase extends Dispatcher {
-	  constructor () {
+	  constructor (opts) {
 	    super();
 
 	    this[kDestroyed] = false;
 	    this[kOnDestroyed] = null;
 	    this[kClosed] = false;
 	    this[kOnClosed] = [];
+	    this[kWebSocketOptions] = opts?.webSocket ?? {};
+	  }
+
+	  get webSocketOptions () {
+	    return {
+	      maxPayloadSize: this[kWebSocketOptions].maxPayloadSize ?? 128 * 1024 * 1024
+	    }
 	  }
 
 	  get destroyed () {
@@ -3604,9 +3612,9 @@ var hasRequiredConstants$3;
 function requireConstants$3 () {
 	if (hasRequiredConstants$3) return constants$3;
 	hasRequiredConstants$3 = 1;
-	(function (exports) {
-		Object.defineProperty(exports, "__esModule", { value: true });
-		exports.SPECIAL_HEADERS = exports.HEADER_STATE = exports.MINOR = exports.MAJOR = exports.CONNECTION_TOKEN_CHARS = exports.HEADER_CHARS = exports.TOKEN = exports.STRICT_TOKEN = exports.HEX = exports.URL_CHAR = exports.STRICT_URL_CHAR = exports.USERINFO_CHARS = exports.MARK = exports.ALPHANUM = exports.NUM = exports.HEX_MAP = exports.NUM_MAP = exports.ALPHA = exports.FINISH = exports.H_METHOD_MAP = exports.METHOD_MAP = exports.METHODS_RTSP = exports.METHODS_ICE = exports.METHODS_HTTP = exports.METHODS = exports.LENIENT_FLAGS = exports.FLAGS = exports.TYPE = exports.ERROR = void 0;
+	(function (exports$1) {
+		Object.defineProperty(exports$1, "__esModule", { value: true });
+		exports$1.SPECIAL_HEADERS = exports$1.HEADER_STATE = exports$1.MINOR = exports$1.MAJOR = exports$1.CONNECTION_TOKEN_CHARS = exports$1.HEADER_CHARS = exports$1.TOKEN = exports$1.STRICT_TOKEN = exports$1.HEX = exports$1.URL_CHAR = exports$1.STRICT_URL_CHAR = exports$1.USERINFO_CHARS = exports$1.MARK = exports$1.ALPHANUM = exports$1.NUM = exports$1.HEX_MAP = exports$1.NUM_MAP = exports$1.ALPHA = exports$1.FINISH = exports$1.H_METHOD_MAP = exports$1.METHOD_MAP = exports$1.METHODS_RTSP = exports$1.METHODS_ICE = exports$1.METHODS_HTTP = exports$1.METHODS = exports$1.LENIENT_FLAGS = exports$1.FLAGS = exports$1.TYPE = exports$1.ERROR = void 0;
 		const utils_1 = requireUtils();
 		(function (ERROR) {
 		    ERROR[ERROR["OK"] = 0] = "OK";
@@ -3634,12 +3642,12 @@ function requireConstants$3 () {
 		    ERROR[ERROR["PAUSED_UPGRADE"] = 22] = "PAUSED_UPGRADE";
 		    ERROR[ERROR["PAUSED_H2_UPGRADE"] = 23] = "PAUSED_H2_UPGRADE";
 		    ERROR[ERROR["USER"] = 24] = "USER";
-		})(exports.ERROR || (exports.ERROR = {}));
+		})(exports$1.ERROR || (exports$1.ERROR = {}));
 		(function (TYPE) {
 		    TYPE[TYPE["BOTH"] = 0] = "BOTH";
 		    TYPE[TYPE["REQUEST"] = 1] = "REQUEST";
 		    TYPE[TYPE["RESPONSE"] = 2] = "RESPONSE";
-		})(exports.TYPE || (exports.TYPE = {}));
+		})(exports$1.TYPE || (exports$1.TYPE = {}));
 		(function (FLAGS) {
 		    FLAGS[FLAGS["CONNECTION_KEEP_ALIVE"] = 1] = "CONNECTION_KEEP_ALIVE";
 		    FLAGS[FLAGS["CONNECTION_CLOSE"] = 2] = "CONNECTION_CLOSE";
@@ -3651,12 +3659,12 @@ function requireConstants$3 () {
 		    FLAGS[FLAGS["TRAILING"] = 128] = "TRAILING";
 		    // 1 << 8 is unused
 		    FLAGS[FLAGS["TRANSFER_ENCODING"] = 512] = "TRANSFER_ENCODING";
-		})(exports.FLAGS || (exports.FLAGS = {}));
+		})(exports$1.FLAGS || (exports$1.FLAGS = {}));
 		(function (LENIENT_FLAGS) {
 		    LENIENT_FLAGS[LENIENT_FLAGS["HEADERS"] = 1] = "HEADERS";
 		    LENIENT_FLAGS[LENIENT_FLAGS["CHUNKED_LENGTH"] = 2] = "CHUNKED_LENGTH";
 		    LENIENT_FLAGS[LENIENT_FLAGS["KEEP_ALIVE"] = 4] = "KEEP_ALIVE";
-		})(exports.LENIENT_FLAGS || (exports.LENIENT_FLAGS = {}));
+		})(exports$1.LENIENT_FLAGS || (exports$1.LENIENT_FLAGS = {}));
 		var METHODS;
 		(function (METHODS) {
 		    METHODS[METHODS["DELETE"] = 0] = "DELETE";
@@ -3716,8 +3724,8 @@ function requireConstants$3 () {
 		    METHODS[METHODS["RECORD"] = 44] = "RECORD";
 		    /* RAOP */
 		    METHODS[METHODS["FLUSH"] = 45] = "FLUSH";
-		})(METHODS = exports.METHODS || (exports.METHODS = {}));
-		exports.METHODS_HTTP = [
+		})(METHODS = exports$1.METHODS || (exports$1.METHODS = {}));
+		exports$1.METHODS_HTTP = [
 		    METHODS.DELETE,
 		    METHODS.GET,
 		    METHODS.HEAD,
@@ -3755,10 +3763,10 @@ function requireConstants$3 () {
 		    // TODO(indutny): should we allow it with HTTP?
 		    METHODS.SOURCE,
 		];
-		exports.METHODS_ICE = [
+		exports$1.METHODS_ICE = [
 		    METHODS.SOURCE,
 		];
-		exports.METHODS_RTSP = [
+		exports$1.METHODS_RTSP = [
 		    METHODS.OPTIONS,
 		    METHODS.DESCRIBE,
 		    METHODS.ANNOUNCE,
@@ -3775,59 +3783,59 @@ function requireConstants$3 () {
 		    METHODS.GET,
 		    METHODS.POST,
 		];
-		exports.METHOD_MAP = utils_1.enumToMap(METHODS);
-		exports.H_METHOD_MAP = {};
-		Object.keys(exports.METHOD_MAP).forEach((key) => {
+		exports$1.METHOD_MAP = utils_1.enumToMap(METHODS);
+		exports$1.H_METHOD_MAP = {};
+		Object.keys(exports$1.METHOD_MAP).forEach((key) => {
 		    if (/^H/.test(key)) {
-		        exports.H_METHOD_MAP[key] = exports.METHOD_MAP[key];
+		        exports$1.H_METHOD_MAP[key] = exports$1.METHOD_MAP[key];
 		    }
 		});
 		(function (FINISH) {
 		    FINISH[FINISH["SAFE"] = 0] = "SAFE";
 		    FINISH[FINISH["SAFE_WITH_CB"] = 1] = "SAFE_WITH_CB";
 		    FINISH[FINISH["UNSAFE"] = 2] = "UNSAFE";
-		})(exports.FINISH || (exports.FINISH = {}));
-		exports.ALPHA = [];
+		})(exports$1.FINISH || (exports$1.FINISH = {}));
+		exports$1.ALPHA = [];
 		for (let i = 'A'.charCodeAt(0); i <= 'Z'.charCodeAt(0); i++) {
 		    // Upper case
-		    exports.ALPHA.push(String.fromCharCode(i));
+		    exports$1.ALPHA.push(String.fromCharCode(i));
 		    // Lower case
-		    exports.ALPHA.push(String.fromCharCode(i + 0x20));
+		    exports$1.ALPHA.push(String.fromCharCode(i + 0x20));
 		}
-		exports.NUM_MAP = {
+		exports$1.NUM_MAP = {
 		    0: 0, 1: 1, 2: 2, 3: 3, 4: 4,
 		    5: 5, 6: 6, 7: 7, 8: 8, 9: 9,
 		};
-		exports.HEX_MAP = {
+		exports$1.HEX_MAP = {
 		    0: 0, 1: 1, 2: 2, 3: 3, 4: 4,
 		    5: 5, 6: 6, 7: 7, 8: 8, 9: 9,
 		    A: 0XA, B: 0XB, C: 0XC, D: 0XD, E: 0XE, F: 0XF,
 		    a: 0xa, b: 0xb, c: 0xc, d: 0xd, e: 0xe, f: 0xf,
 		};
-		exports.NUM = [
+		exports$1.NUM = [
 		    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 		];
-		exports.ALPHANUM = exports.ALPHA.concat(exports.NUM);
-		exports.MARK = ['-', '_', '.', '!', '~', '*', '\'', '(', ')'];
-		exports.USERINFO_CHARS = exports.ALPHANUM
-		    .concat(exports.MARK)
+		exports$1.ALPHANUM = exports$1.ALPHA.concat(exports$1.NUM);
+		exports$1.MARK = ['-', '_', '.', '!', '~', '*', '\'', '(', ')'];
+		exports$1.USERINFO_CHARS = exports$1.ALPHANUM
+		    .concat(exports$1.MARK)
 		    .concat(['%', ';', ':', '&', '=', '+', '$', ',']);
 		// TODO(indutny): use RFC
-		exports.STRICT_URL_CHAR = [
+		exports$1.STRICT_URL_CHAR = [
 		    '!', '"', '$', '%', '&', '\'',
 		    '(', ')', '*', '+', ',', '-', '.', '/',
 		    ':', ';', '<', '=', '>',
 		    '@', '[', '\\', ']', '^', '_',
 		    '`',
 		    '{', '|', '}', '~',
-		].concat(exports.ALPHANUM);
-		exports.URL_CHAR = exports.STRICT_URL_CHAR
+		].concat(exports$1.ALPHANUM);
+		exports$1.URL_CHAR = exports$1.STRICT_URL_CHAR
 		    .concat(['\t', '\f']);
 		// All characters with 0x80 bit set to 1
 		for (let i = 0x80; i <= 0xff; i++) {
-		    exports.URL_CHAR.push(i);
+		    exports$1.URL_CHAR.push(i);
 		}
-		exports.HEX = exports.NUM.concat(['a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F']);
+		exports$1.HEX = exports$1.NUM.concat(['a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F']);
 		/* Tokens as defined by rfc 2616. Also lowercases them.
 		 *        token       = 1*<any CHAR except CTLs or separators>
 		 *     separators     = "(" | ")" | "<" | ">" | "@"
@@ -3835,27 +3843,27 @@ function requireConstants$3 () {
 		 *                    | "/" | "[" | "]" | "?" | "="
 		 *                    | "{" | "}" | SP | HT
 		 */
-		exports.STRICT_TOKEN = [
+		exports$1.STRICT_TOKEN = [
 		    '!', '#', '$', '%', '&', '\'',
 		    '*', '+', '-', '.',
 		    '^', '_', '`',
 		    '|', '~',
-		].concat(exports.ALPHANUM);
-		exports.TOKEN = exports.STRICT_TOKEN.concat([' ']);
+		].concat(exports$1.ALPHANUM);
+		exports$1.TOKEN = exports$1.STRICT_TOKEN.concat([' ']);
 		/*
 		 * Verify that a char is a valid visible (printable) US-ASCII
 		 * character or %x80-FF
 		 */
-		exports.HEADER_CHARS = ['\t'];
+		exports$1.HEADER_CHARS = ['\t'];
 		for (let i = 32; i <= 255; i++) {
 		    if (i !== 127) {
-		        exports.HEADER_CHARS.push(i);
+		        exports$1.HEADER_CHARS.push(i);
 		    }
 		}
 		// ',' = \x44
-		exports.CONNECTION_TOKEN_CHARS = exports.HEADER_CHARS.filter((c) => c !== 44);
-		exports.MAJOR = exports.NUM_MAP;
-		exports.MINOR = exports.MAJOR;
+		exports$1.CONNECTION_TOKEN_CHARS = exports$1.HEADER_CHARS.filter((c) => c !== 44);
+		exports$1.MAJOR = exports$1.NUM_MAP;
+		exports$1.MINOR = exports$1.MAJOR;
 		var HEADER_STATE;
 		(function (HEADER_STATE) {
 		    HEADER_STATE[HEADER_STATE["GENERAL"] = 0] = "GENERAL";
@@ -3867,8 +3875,8 @@ function requireConstants$3 () {
 		    HEADER_STATE[HEADER_STATE["CONNECTION_CLOSE"] = 6] = "CONNECTION_CLOSE";
 		    HEADER_STATE[HEADER_STATE["CONNECTION_UPGRADE"] = 7] = "CONNECTION_UPGRADE";
 		    HEADER_STATE[HEADER_STATE["TRANSFER_ENCODING_CHUNKED"] = 8] = "TRANSFER_ENCODING_CHUNKED";
-		})(HEADER_STATE = exports.HEADER_STATE || (exports.HEADER_STATE = {}));
-		exports.SPECIAL_HEADERS = {
+		})(HEADER_STATE = exports$1.HEADER_STATE || (exports$1.HEADER_STATE = {}));
+		exports$1.SPECIAL_HEADERS = {
 		    'connection': HEADER_STATE.CONNECTION,
 		    'content-length': HEADER_STATE.CONTENT_LENGTH,
 		    'proxy-connection': HEADER_STATE.CONNECTION,
@@ -8759,10 +8767,10 @@ function requireClientH1 () {
 	const TIMEOUT_KEEP_ALIVE = 8 | USE_NATIVE_TIMER;
 
 	class Parser {
-	  constructor (client, socket, { exports }) {
+	  constructor (client, socket, { exports: exports$1 }) {
 	    assert(Number.isFinite(client[kMaxHeadersSize]) && client[kMaxHeadersSize] > 0);
 
-	    this.llhttp = exports;
+	    this.llhttp = exports$1;
 	    this.ptr = this.llhttp.llhttp_alloc(constants.TYPE.RESPONSE);
 	    this.client = client;
 	    this.socket = socket;
@@ -11100,9 +11108,10 @@ function requireClient () {
 	    autoSelectFamilyAttemptTimeout,
 	    // h2
 	    maxConcurrentStreams,
-	    allowH2
+	    allowH2,
+	    webSocket
 	  } = {}) {
-	    super();
+	    super({ webSocket });
 
 	    if (keepAlive !== undefined) {
 	      throw new InvalidArgumentError('unsupported keepAlive, use pipelining=0 instead')
@@ -11809,8 +11818,8 @@ function requirePoolBase () {
 	const kStats = Symbol('stats');
 
 	class PoolBase extends DispatcherBase {
-	  constructor () {
-	    super();
+	  constructor (opts) {
+	    super(opts);
 
 	    this[kQueue] = new FixedQueue();
 	    this[kClients] = [];
@@ -12029,8 +12038,6 @@ function requirePool () {
 	    allowH2,
 	    ...options
 	  } = {}) {
-	    super();
-
 	    if (connections != null && (!Number.isFinite(connections) || connections < 0)) {
 	      throw new InvalidArgumentError('invalid connections')
 	    }
@@ -12054,6 +12061,8 @@ function requirePool () {
 	        ...connect
 	      });
 	    }
+
+	    super(options);
 
 	    this[kInterceptors] = options.interceptors?.Pool && Array.isArray(options.interceptors.Pool)
 	      ? options.interceptors.Pool
@@ -12348,7 +12357,6 @@ function requireAgent () {
 
 	class Agent extends DispatcherBase {
 	  constructor ({ factory = defaultFactory, maxRedirections = 0, connect, ...options } = {}) {
-	    super();
 
 	    if (typeof factory !== 'function') {
 	      throw new InvalidArgumentError('factory must be a function.')
@@ -12361,6 +12369,8 @@ function requireAgent () {
 	    if (!Number.isInteger(maxRedirections) || maxRedirections < 0) {
 	      throw new InvalidArgumentError('maxRedirections must be a positive number')
 	    }
+
+	    super(options);
 
 	    if (connect && typeof connect !== 'function') {
 	      connect = { ...connect };
@@ -25502,40 +25512,35 @@ function requirePermessageDeflate () {
 	const kBuffer = Symbol('kBuffer');
 	const kLength = Symbol('kLength');
 
-	// Default maximum decompressed message size: 4 MB
-	const kDefaultMaxDecompressedSize = 4 * 1024 * 1024;
-
 	class PerMessageDeflate {
 	  /** @type {import('node:zlib').InflateRaw} */
 	  #inflate
 
 	  #options = {}
 
-	  /** @type {boolean} */
-	  #aborted = false
-
-	  /** @type {Function|null} */
-	  #currentCallback = null
+	  #maxPayloadSize = 0
 
 	  /**
 	   * @param {Map<string, string>} extensions
 	   */
-	  constructor (extensions) {
+	  constructor (extensions, options) {
 	    this.#options.serverNoContextTakeover = extensions.has('server_no_context_takeover');
 	    this.#options.serverMaxWindowBits = extensions.get('server_max_window_bits');
+
+	    this.#maxPayloadSize = options.maxPayloadSize;
 	  }
 
+	  /**
+	   * Decompress a compressed payload.
+	   * @param {Buffer} chunk Compressed data
+	   * @param {boolean} fin Final fragment flag
+	   * @param {Function} callback Callback function
+	   */
 	  decompress (chunk, fin, callback) {
 	    // An endpoint uses the following algorithm to decompress a message.
 	    // 1.  Append 4 octets of 0x00 0x00 0xff 0xff to the tail end of the
 	    //     payload of the message.
 	    // 2.  Decompress the resulting data using DEFLATE.
-
-	    if (this.#aborted) {
-	      callback(new MessageSizeExceededError());
-	      return
-	    }
-
 	    if (!this.#inflate) {
 	      let windowBits = Z_DEFAULT_WINDOWBITS;
 
@@ -25558,23 +25563,12 @@ function requirePermessageDeflate () {
 	      this.#inflate[kLength] = 0;
 
 	      this.#inflate.on('data', (data) => {
-	        if (this.#aborted) {
-	          return
-	        }
-
 	        this.#inflate[kLength] += data.length;
 
-	        if (this.#inflate[kLength] > kDefaultMaxDecompressedSize) {
-	          this.#aborted = true;
+	        if (this.#maxPayloadSize > 0 && this.#inflate[kLength] > this.#maxPayloadSize) {
+	          callback(new MessageSizeExceededError());
 	          this.#inflate.removeAllListeners();
-	          this.#inflate.destroy();
 	          this.#inflate = null;
-
-	          if (this.#currentCallback) {
-	            const cb = this.#currentCallback;
-	            this.#currentCallback = null;
-	            cb(new MessageSizeExceededError());
-	          }
 	          return
 	        }
 
@@ -25587,14 +25581,13 @@ function requirePermessageDeflate () {
 	      });
 	    }
 
-	    this.#currentCallback = callback;
 	    this.#inflate.write(chunk);
 	    if (fin) {
 	      this.#inflate.write(tail);
 	    }
 
 	    this.#inflate.flush(() => {
-	      if (this.#aborted || !this.#inflate) {
+	      if (!this.#inflate) {
 	        return
 	      }
 
@@ -25602,7 +25595,6 @@ function requirePermessageDeflate () {
 
 	      this.#inflate[kBuffer].length = 0;
 	      this.#inflate[kLength] = 0;
-	      this.#currentCallback = null;
 
 	      callback(null, full);
 	    });
@@ -25638,6 +25630,7 @@ function requireReceiver () {
 	const { WebsocketFrameSend } = requireFrame();
 	const { closeWebSocketConnection } = requireConnection();
 	const { PerMessageDeflate } = requirePermessageDeflate();
+	const { MessageSizeExceededError } = requireErrors();
 
 	// This code was influenced by ws released under the MIT license.
 	// Copyright (c) 2011 Einar Otto Stangvik <einaros@gmail.com>
@@ -25646,6 +25639,7 @@ function requireReceiver () {
 
 	class ByteParser extends Writable {
 	  #buffers = []
+	  #fragmentsBytes = 0
 	  #byteOffset = 0
 	  #loop = false
 
@@ -25657,18 +25651,23 @@ function requireReceiver () {
 	  /** @type {Map<string, PerMessageDeflate>} */
 	  #extensions
 
+	  /** @type {number} */
+	  #maxPayloadSize
+
 	  /**
 	   * @param {import('./websocket').WebSocket} ws
 	   * @param {Map<string, string>|null} extensions
+	   * @param {{ maxPayloadSize?: number }} [options]
 	   */
-	  constructor (ws, extensions) {
+	  constructor (ws, extensions, options = {}) {
 	    super();
 
 	    this.ws = ws;
 	    this.#extensions = extensions == null ? new Map() : extensions;
+	    this.#maxPayloadSize = options.maxPayloadSize ?? 0;
 
 	    if (this.#extensions.has('permessage-deflate')) {
-	      this.#extensions.set('permessage-deflate', new PerMessageDeflate(extensions));
+	      this.#extensions.set('permessage-deflate', new PerMessageDeflate(extensions, options));
 	    }
 	  }
 
@@ -25682,6 +25681,19 @@ function requireReceiver () {
 	    this.#loop = true;
 
 	    this.run(callback);
+	  }
+
+	  #validatePayloadLength () {
+	    if (
+	      this.#maxPayloadSize > 0 &&
+	      !isControlFrame(this.#info.opcode) &&
+	      this.#info.payloadLength > this.#maxPayloadSize
+	    ) {
+	      failWebsocketConnection(this.ws, 'Payload size exceeds maximum allowed size');
+	      return false
+	    }
+
+	    return true
 	  }
 
 	  /**
@@ -25772,6 +25784,10 @@ function requireReceiver () {
 	        if (payloadLength <= 125) {
 	          this.#info.payloadLength = payloadLength;
 	          this.#state = parserStates.READ_DATA;
+
+	          if (!this.#validatePayloadLength()) {
+	            return
+	          }
 	        } else if (payloadLength === 126) {
 	          this.#state = parserStates.PAYLOADLENGTH_16;
 	        } else if (payloadLength === 127) {
@@ -25796,6 +25812,10 @@ function requireReceiver () {
 
 	        this.#info.payloadLength = buffer.readUInt16BE(0);
 	        this.#state = parserStates.READ_DATA;
+
+	        if (!this.#validatePayloadLength()) {
+	          return
+	        }
 	      } else if (this.#state === parserStates.PAYLOADLENGTH_64) {
 	        if (this.#byteOffset < 8) {
 	          return callback()
@@ -25818,6 +25838,10 @@ function requireReceiver () {
 
 	        this.#info.payloadLength = lower;
 	        this.#state = parserStates.READ_DATA;
+
+	        if (!this.#validatePayloadLength()) {
+	          return
+	        }
 	      } else if (this.#state === parserStates.READ_DATA) {
 	        if (this.#byteOffset < this.#info.payloadLength) {
 	          return callback()
@@ -25830,42 +25854,53 @@ function requireReceiver () {
 	          this.#state = parserStates.INFO;
 	        } else {
 	          if (!this.#info.compressed) {
-	            this.#fragments.push(body);
+	            this.writeFragments(body);
+
+	            if (this.#maxPayloadSize > 0 && this.#fragmentsBytes > this.#maxPayloadSize) {
+	              failWebsocketConnection(this.ws, new MessageSizeExceededError().message);
+	              return
+	            }
 
 	            // If the frame is not fragmented, a message has been received.
 	            // If the frame is fragmented, it will terminate with a fin bit set
 	            // and an opcode of 0 (continuation), therefore we handle that when
 	            // parsing continuation frames, not here.
 	            if (!this.#info.fragmented && this.#info.fin) {
-	              const fullMessage = Buffer.concat(this.#fragments);
-	              websocketMessageReceived(this.ws, this.#info.binaryType, fullMessage);
-	              this.#fragments.length = 0;
+	              websocketMessageReceived(this.ws, this.#info.binaryType, this.consumeFragments());
 	            }
 
 	            this.#state = parserStates.INFO;
 	          } else {
-	            this.#extensions.get('permessage-deflate').decompress(body, this.#info.fin, (error, data) => {
-	              if (error) {
-	                failWebsocketConnection(this.ws, error.message);
-	                return
-	              }
+	            this.#extensions.get('permessage-deflate').decompress(
+	              body,
+	              this.#info.fin,
+	              (error, data) => {
+	                if (error) {
+	                  failWebsocketConnection(this.ws, error.message);
+	                  return
+	                }
 
-	              this.#fragments.push(data);
+	                this.writeFragments(data);
 
-	              if (!this.#info.fin) {
-	                this.#state = parserStates.INFO;
+	                if (this.#maxPayloadSize > 0 && this.#fragmentsBytes > this.#maxPayloadSize) {
+	                  failWebsocketConnection(this.ws, new MessageSizeExceededError().message);
+	                  return
+	                }
+
+	                if (!this.#info.fin) {
+	                  this.#state = parserStates.INFO;
+	                  this.#loop = true;
+	                  this.run(callback);
+	                  return
+	                }
+
+	                websocketMessageReceived(this.ws, this.#info.binaryType, this.consumeFragments());
+
 	                this.#loop = true;
+	                this.#state = parserStates.INFO;
 	                this.run(callback);
-	                return
 	              }
-
-	              websocketMessageReceived(this.ws, this.#info.binaryType, Buffer.concat(this.#fragments));
-
-	              this.#loop = true;
-	              this.#state = parserStates.INFO;
-	              this.#fragments.length = 0;
-	              this.run(callback);
-	            });
+	            );
 
 	            this.#loop = false;
 	            break
@@ -25915,6 +25950,26 @@ function requireReceiver () {
 	    this.#byteOffset -= n;
 
 	    return buffer
+	  }
+
+	  writeFragments (fragment) {
+	    this.#fragmentsBytes += fragment.length;
+	    this.#fragments.push(fragment);
+	  }
+
+	  consumeFragments () {
+	    const fragments = this.#fragments;
+
+	    if (fragments.length === 1) {
+	      this.#fragmentsBytes = 0;
+	      return fragments.shift()
+	    }
+
+	    const output = Buffer.concat(fragments, this.#fragmentsBytes);
+	    this.#fragments = [];
+	    this.#fragmentsBytes = 0;
+
+	    return output
 	  }
 
 	  parseCloseBody (data) {
@@ -26602,7 +26657,11 @@ function requireWebsocket () {
 	    // once this happens, the connection is open
 	    this[kResponse] = response;
 
-	    const parser = new ByteParser(this, parsedExtensions);
+	    const maxPayloadSize = this[kController]?.dispatcher?.webSocketOptions?.maxPayloadSize;
+
+	    const parser = new ByteParser(this, parsedExtensions, {
+	      maxPayloadSize
+	    });
 	    parser.on('drain', onParserDrain);
 	    parser.on('error', onParserError.bind(this));
 
@@ -28104,7 +28163,7 @@ class Context {
         var _a, _b, _c;
         this.payload = {};
         if (process.env.GITHUB_EVENT_PATH) {
-            if (existsSync(process.env.GITHUB_EVENT_PATH)) {
+            if (existsSync$1(process.env.GITHUB_EVENT_PATH)) {
                 this.payload = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, { encoding: 'utf8' }));
             }
             else {
@@ -32826,12 +32885,20 @@ function getOctokit(token, options, ...additionalPlugins) {
  */
 
 /**
- * The error message for incorrect parameter types.
+ * The error message for non-array values.
  *
  * @constant
  * @type {string}
  */
-const typeError =
+const typeErrorArray = "Shescape requires argument lists to be an array";
+
+/**
+ * The error message for non-stringable values.
+ *
+ * @constant
+ * @type {string}
+ */
+const typeErrorString =
   "Shescape requires strings or values that can be converted into a string using .toString()";
 
 /**
@@ -32867,7 +32934,7 @@ function hasOwn(object, property) {
 /**
  * Checks if a value can be converted into a string and converts it if possible.
  *
- * @param {any} value The value of interest.
+ * @param {unknown} value The value of interest.
  * @returns {string | null} If possible the string of `value`, otherwise `null`.
  */
 function maybeToString(value) {
@@ -32880,17 +32947,17 @@ function maybeToString(value) {
   }
 
   const maybeStr = value.toString();
-  if (isString(maybeStr)) {
-    return maybeStr;
-  } else {
+  if (!isString(maybeStr)) {
     return null;
   }
+
+  return maybeStr;
 }
 
 /**
  * Convert a value into a string if that is possible.
  *
- * @param {any} value The value to convert into a string.
+ * @param {unknown} value The value to convert into a string.
  * @returns {string} The `value` as a string.
  * @throws {TypeError} The `value` is not stringable.
  */
@@ -32901,21 +32968,41 @@ function checkedToString(value) {
 
   const maybeStr = maybeToString(value);
   if (maybeStr === null) {
-    throw new TypeError(typeError);
+    throw new TypeError(typeErrorString);
   }
 
   return maybeStr;
 }
 
 /**
+ * Ensures a value is an array.
+ *
+ * @param {unknown} value The value of interest.
+ * @throws {TypeError} The `value` is not an array.
+ */
+function ensureArray(value) {
+  if (!isArray(value)) {
+    throw new TypeError(typeErrorArray);
+  }
+}
+
+/**
  * Checks if a value is a string.
  *
- * @param {any} value The value of interest.
+ * @param {unknown} value The value of interest.
  * @returns {boolean} `true` if `value` is a string, `false` otherwise.
  */
 function isString(value) {
   return typeof value === typeofString;
 }
+
+/**
+ * Checks if a value is an array.
+ *
+ * @param {unknown} value The value of interest.
+ * @returns {boolean} `true` if `value` is an array, `false` otherwise.
+ */
+const isArray = Array.isArray;
 
 /**
  * @overview Provides functionality related to working with executables.
@@ -32945,9 +33032,9 @@ function notFoundError(executable) {
  * @param {Object<string, string>} args.env The environment variables.
  * @param {string} args.executable A string representation of the executable.
  * @param {object} deps The dependencies for this function.
- * @param {Function} deps.exists A function to check if a file exists.
- * @param {Function} deps.readlink A function to resolve (sym)links.
- * @param {Function} deps.which A function to perform a `which(1)`-like lookup.
+ * @param {function(): boolean} deps.exists A function to check if a file exists.
+ * @param {function(): string} deps.readlink A function to resolve (sym)links.
+ * @param {function(): string} deps.which A function to perform a `which(1)`-like lookup.
  * @returns {string} The full path to the binary of the executable.
  * @throws {Error} If the executable could not be found.
  */
@@ -32972,13 +33059,20 @@ function resolveExecutable(
   }
 
   try {
-    resolved = readlink(resolved);
+    const seen = {};
+    while (!hasOwn(seen, resolved)) {
+      seen[resolved] = null;
+      const link = readlink(resolved);
+      const base = path.dirname(resolved);
+      resolved = path.resolve(base, link);
+    }
   } catch {
-    // An error will be thrown if the executable is not a (sym)link, this is not
-    // a problem so the error is ignored
+    // An error is thrown if the argument is not a (sym)link, this is what we
+    // want so we return.
+    return resolved;
   }
 
-  return resolved;
+  throw new Error(`${executable} points to a link loop, cannot resolve shell`);
 }
 
 /**
@@ -32996,41 +33090,43 @@ function resolveExecutable(
 const noShell = Symbol();
 
 /**
- * Build error messages for unsupported shells.
+ * Parses the `flagProtection` option.
  *
- * @param {string} shellName The full name of a shell.
- * @returns {string} The unsupported shell error message.
+ * @param {object} args The arguments for this function.
+ * @param {object} args.options The options for escaping.
+ * @returns {object} The parsed option.
  */
-function unsupportedError$2(shellName) {
-  return `Shescape does not support the shell ${shellName}`;
+function parseFlagProtection({ options }) {
+  const flagProtection = hasOwn(options, "flagProtection")
+    ? options.flagProtection
+    : undefined;
+  if (flagProtection === undefined) {
+    return true;
+  }
+
+  return Boolean(flagProtection);
 }
 
 /**
- * Parses options provided to shescape.
+ * Parses the `shell` option.
  *
  * @param {object} args The arguments for this function.
  * @param {Object<string, string>} args.env The environment variables.
  * @param {object} args.options The options for escaping.
  * @param {object} deps The dependencies for this function.
- * @param {Function} deps.getDefaultShell Function to get the default shell.
- * @param {Function} deps.getShellName Function to get the name of a shell.
- * @param {Function} deps.isShellSupported Function to see if a shell is usable.
- * @returns {object} The parsed arguments.
+ * @param {function(): string} deps.getDefaultShell Function to get the default shell.
+ * @param {function(): string} deps.getShellName Function to get the name of a shell.
+ * @param {function(): boolean} deps.isShellSupported Function to see if a shell is usable.
+ * @returns {object} The parsed option.
  * @throws {Error} The shell is not supported or could not be found.
  */
-function parseOptions(
+function parseShell(
   { env, options },
   { getDefaultShell, getShellName, isShellSupported },
 ) {
-  let flagProtection = hasOwn(options, "flagProtection")
-    ? options.flagProtection
-    : undefined;
   let shell = hasOwn(options, "shell") ? options.shell : undefined;
-
-  flagProtection =
-    flagProtection === undefined ? true : flagProtection ? true : false;
-
   let shellName = noShell;
+
   if (shell !== false) {
     if (!isString(shell)) {
       shell = getDefaultShell({ env });
@@ -33040,9 +33136,28 @@ function parseOptions(
   }
 
   if (!isShellSupported(shellName)) {
-    throw new Error(unsupportedError$2(shellName));
+    throw new Error(`Shescape does not support the shell ${shellName}`);
   }
 
+  return shellName;
+}
+
+/**
+ * Parses the options provided to shescape.
+ *
+ * @param {object} args The arguments for this function.
+ * @param {Object<string, string>} args.env The environment variables.
+ * @param {object} args.options The options for escaping.
+ * @param {object} deps The dependencies for this function.
+ * @param {function(): string} deps.getDefaultShell Function to get the default shell.
+ * @param {function(): string} deps.getShellName Function to get the name of a shell.
+ * @param {function(): boolean} deps.isShellSupported Function to see if a shell is usable.
+ * @returns {object} The parsed options.
+ * @throws {Error} The shell is not supported or could not be found.
+ */
+function parseOptions(args, deps) {
+  const flagProtection = parseFlagProtection(args);
+  const shellName = parseShell(args, deps);
   return { flagProtection, shellName };
 }
 
@@ -33340,52 +33455,197 @@ var libExports = requireLib();
 var which = /*@__PURE__*/getDefaultExportFromCjs(libExports);
 
 /**
+ * @overview Provides an interface for interacting with the file system.
+ * @license MPL-2.0
+ */
+
+
+/**
+ * Synchronously look up if the `path` exists.
+ *
+ * @param {string} path The path to look up.
+ * @param {object} [deps] Node.js' fs module.
+ * @returns {boolean} `true` if the path exists, `false` otherwise.
+ */
+function existsSync(path, deps = fs$1) {
+  return deps.existsSync(path);
+}
+
+/**
+ * Synchronously look up the (target) location of a symbolic link.
+ *
+ * @param {string} path The path to look up.
+ * @param {object} [deps] Node.js' fs module.
+ * @returns {string} The contents of `path`.
+ * @throws {Error} If `path` is not a symbolic link.
+ */
+function readlinkSync(path, deps = fs$1) {
+  return deps.readlinkSync(path);
+}
+
+function isSupportedRegexpFlag(flag) {
+	try {
+		new RegExp('', flag); // eslint-disable-line no-new
+		return true;
+	} catch {
+		return false;
+	}
+}
+
+// SPDX-License-Identifier: MIT
+
+
+/**
+ * The `RegExp()` constructor creates {@link RegExp} objects.
+ *
+ * @param {string|RegExp} pattern The text of the regular expression. This can also be another RegExp object.
+ * @param {string} [flags] If specified, flags is a string that contains the flags to add. Alternatively, if a RegExp object is supplied for the pattern, the flags string will replace any of that object's flags.
+ * @returns {RegExp} A {@link RegExp} object constructed from `pattern` and `flags`.
+ * @throws {SyntaxError} Thrown in one of the following cases: `pattern` cannot be parsed as a valid regular expression, or `flags` contains repeated characters or any character outside of those allowed.
+ */
+let lRegExp = RegExp;
+
+if (isSupportedRegexpFlag("l")) {
+	lRegExp = function(pattern, flags) {
+		if (flags === undefined) {
+			flags = "";
+			if (pattern instanceof RegExp && pattern.flags) {
+				flags = pattern.flags.replace(/l/g, "");
+			}
+		}
+
+		return new RegExp(pattern, `${flags}l`);
+	};
+}
+
+var RegExp$1 = lRegExp;
+
+/**
  * @overview Provides functionality for the Bourne-again shell (Bash).
  * @license MPL-2.0
  */
 
-/**
- * Escape an argument for use in Bash.
- *
- * @param {string} arg The argument to escape.
- * @returns {string} The escaped argument.
- */
-function escapeArg$7(arg) {
-  return arg
-    .replace(/[\0\u0008\r\u001B\u009B]/gu, "")
-    .replace(/\n/gu, " ")
-    .replace(/\\/gu, "\\\\")
-    .replace(/(?<=^|\s)([#~])/gu, "\\$1")
-    .replace(/(["$&'()*;<>?`{|])/gu, "\\$1")
-    .replace(/(?<=[:=])(~)(?=[\s+\-/0:=]|$)/gu, "\\$1")
-    .replace(/([\t ])/gu, "\\$1");
-}
 
 /**
  * Returns a function to escape arguments for use in Bash for the given use
  * case.
  *
- * @returns {Function} A function to escape arguments.
+ * @returns {function(string): string} A function to escape arguments.
  */
-function getEscapeFunction$9() {
-  return escapeArg$7;
+function getEscapeFunction$8() {
+  const controls = new RegExp$1("[\0\u0008\r\u001B\u009B]", "g");
+  const newlines = new RegExp$1("\n", "g");
+  const backslashes = new RegExp$1("\\\\", "g");
+  const comments = new RegExp$1("(^|\\s)#", "g");
+  const home = new RegExp$1("(^|[\\s:=])~", "g");
+  const specials = new RegExp$1("([\"$&'()*;<>?[\\]`{|])", "g");
+  const whitespace = new RegExp$1("([\t ])", "g");
+  return (arg) =>
+    arg
+      .replace(controls, "")
+      .replace(newlines, " ")
+      .replace(backslashes, "\\\\")
+      .replace(comments, "$1\\#")
+      .replace(home, "$1\\~")
+      .replace(specials, "\\$1")
+      .replace(whitespace, "\\$1");
 }
 
 /**
  * Escape an argument for use in Bash when the argument is being quoted.
  *
- * @param {string} arg The argument to escape.
- * @returns {string} The escaped argument.
+ * @returns {function(string): string} A function to escape arguments.
  */
-function escapeArgForQuoted$5(arg) {
-  return arg
-    .replace(/[\0\u0008\u001B\u009B]/gu, "")
-    .replace(/\r(?!\n)/gu, "")
-    .replace(/'/gu, "'\\''");
+function getQuoteEscapeFunction$3() {
+  const controls = new RegExp$1("[\0\u0008\u001B\u009B]", "g");
+  const crs = new RegExp$1("(?:(\r\n)|\r)", "g");
+  const quotes = new RegExp$1("'", "g");
+  return (arg) =>
+    arg.replace(controls, "").replace(crs, "$1").replace(quotes, "'\\''");
 }
 
 /**
  * Quotes an argument for use in Bash.
+ *
+ * @param {string} arg The argument to quote.
+ * @returns {string} The quoted argument.
+ */
+function quoteArg$6(arg) {
+  return `'${arg}'`;
+}
+
+/**
+ * Returns a pair of functions to escape and quote arguments for use in Bash.
+ *
+ * @returns {(function(string): string)[]} A function pair to escape & quote arguments.
+ */
+function getQuoteFunction$8() {
+  return [getQuoteEscapeFunction$3(), quoteArg$6];
+}
+
+/**
+ * Returns a function to protect against flag injection for Bash.
+ *
+ * @returns {function(string): string} A function to protect against flag injection.
+ */
+function getFlagProtectionFunction$8() {
+  const leadingHyphens = new RegExp$1("^-+");
+  return (arg) => arg.replace(leadingHyphens, "");
+}
+
+var bash = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    getEscapeFunction: getEscapeFunction$8,
+    getFlagProtectionFunction: getFlagProtectionFunction$8,
+    getQuoteFunction: getQuoteFunction$8
+});
+
+/**
+ * @overview Provides functionality for the BusyBox shell.
+ * @license MPL-2.0
+ */
+
+
+/**
+ * Returns a function to escape arguments for use in BusyBox for the given use
+ * case.
+ *
+ * @returns {function(string): string} A function to escape arguments.
+ */
+function getEscapeFunction$7() {
+  const controls = new RegExp$1("[\0\u0008\r\u001B\u009B]", "g");
+  const newlines = new RegExp$1("\n", "g");
+  const backslashes = new RegExp$1("\\\\", "g");
+  const comments = new RegExp$1("(^|\\s)#", "g");
+  const home = new RegExp$1("(^|\\s)~", "g");
+  const specials = new RegExp$1("([\"$&'()*;<>?[\\]`|])", "g");
+  const whitespace = new RegExp$1("([\t ])", "g");
+  return (arg) =>
+    arg
+      .replace(controls, "")
+      .replace(newlines, " ")
+      .replace(backslashes, "\\\\")
+      .replace(comments, "$1\\#")
+      .replace(home, "$1\\~")
+      .replace(specials, "\\$1")
+      .replace(whitespace, "\\$1");
+}
+
+/**
+ * Escape an argument for use in BusyBox when the argument is being quoted.
+ *
+ * @returns {function(string): string} A function to escape arguments.
+ */
+function getQuoteEscapeFunction$2() {
+  const controls = new RegExp$1("[\0\u0008\u001B\u009B]", "g");
+  const crs = new RegExp$1("(?:(\r\n)|\r)", "g");
+  const quotes = new RegExp$1("'", "g");
+  return (arg) =>
+    arg.replace(controls, "").replace(crs, "$1").replace(quotes, "'\\''");
+}
+
+/**
+ * Quotes an argument for use in BusyBox.
  *
  * @param {string} arg The argument to quote.
  * @returns {string} The quoted argument.
@@ -33395,33 +33655,30 @@ function quoteArg$5(arg) {
 }
 
 /**
- * Returns a pair of functions to escape and quote arguments for use in Bash.
+ * Returns a pair of functions to escape and quote arguments for use in BusyBox.
  *
- * @returns {Function[]} A function pair to escape & quote arguments.
+ * @returns {(function(string): string)[]} A function pair to escape & quote arguments.
  */
-function getQuoteFunction$9() {
-  return [escapeArgForQuoted$5, quoteArg$5];
+function getQuoteFunction$7() {
+  return [getQuoteEscapeFunction$2(), quoteArg$5];
 }
 
 /**
- * Remove any prefix from the provided argument that might be interpreted as a
- * flag on Unix systems for Bash.
+ * Returns a function to protect against flag injection for BusyBox.
  *
- * @param {string} arg The argument to update.
- * @returns {string} The updated argument.
+ * @returns {function(string): string} A function to protect against flag injection.
  */
-function stripFlagPrefix$7(arg) {
-  return arg.replace(/^-+/gu, "");
+function getFlagProtectionFunction$7() {
+  const leadingHyphens = new RegExp$1("^-+");
+  return (arg) => arg.replace(leadingHyphens, "");
 }
 
-/**
- * Returns a function to protect against flag injection for Bash.
- *
- * @returns {Function} A function to protect against flag injection.
- */
-function getFlagProtectionFunction$9() {
-  return stripFlagPrefix$7;
-}
+var busybox = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    getEscapeFunction: getEscapeFunction$7,
+    getFlagProtectionFunction: getFlagProtectionFunction$7,
+    getQuoteFunction: getQuoteFunction$7
+});
 
 /**
  * @overview Provides functionality for the C shell (csh).
@@ -33430,55 +33687,58 @@ function getFlagProtectionFunction$9() {
 
 
 /**
- * Escape an argument for use in csh.
- *
- * @param {string} arg The argument to escape.
- * @returns {string} The escaped argument.
- */
-function escapeArg$6(arg) {
-  const textEncoder = new TextEncoder$1();
-  return arg
-    .replace(/[\0\u0008\r\u001B\u009B]/gu, "")
-    .replace(/\n/gu, " ")
-    .replace(/\\/gu, "\\\\")
-    .replace(/(?<=^|\s)(~)/gu, "\\$1")
-    .replace(/!(?!$)/gu, "\\!")
-    .replace(/(["#$&'()*;<>?[`{|])/gu, "\\$1")
-    .replace(/([\t ])/gu, "\\$1")
-    .split("")
-    .map(
-      // Due to a bug in C shell version 20110502-7, when a character whose
-      // utf-8 encoding includes the bytes 0xA0 (160 in decimal) appears in
-      // an argument after an escaped character, it will hang and endlessly
-      // consume memory unless the character is escaped with quotes.
-      // ref: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=995013
-      (char) => (textEncoder.encode(char).includes(160) ? `'${char}'` : char),
-    )
-    .join("");
-}
-
-/**
  * Returns a function to escape arguments for use in csh for the given use case.
  *
- * @returns {Function} A function to escape arguments.
+ * @returns {function(string): string} A function to escape arguments.
  */
-function getEscapeFunction$8() {
-  return escapeArg$6;
+function getEscapeFunction$6() {
+  const controls = new RegExp$1("[\0\u0008\r\u001B\u009B]", "g");
+  const newlines = new RegExp$1("\n", "g");
+  const backslashes = new RegExp$1("\\\\", "g");
+  const home = new RegExp$1("(^|\\s)~", "g");
+  const history = new RegExp$1("!", "g");
+  const specials = new RegExp$1("([\"#$&'()*;<>?[`{|])", "g");
+  const whitespace = new RegExp$1("([\t ])", "g");
+
+  const textEncoder = new TextEncoder$1();
+  return (arg) =>
+    arg
+      .replace(controls, "")
+      .replace(newlines, " ")
+      .replace(backslashes, "\\\\")
+      .replace(home, "$1\\~")
+      .replace(history, "\\!")
+      .replace(specials, "\\$1")
+      .replace(whitespace, "\\$1")
+      .split("")
+      .map(
+        // Due to a bug in C shell version 20110502-7, when a character whose
+        // utf-8 encoding includes the bytes 0xA0 (160 in decimal) appears in
+        // an argument after an escaped character, it will hang and endlessly
+        // consume memory unless the character is escaped with quotes.
+        // ref: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=995013
+        (char) => (textEncoder.encode(char).includes(160) ? `'${char}'` : char),
+      )
+      .join("");
 }
 
 /**
- * Escape an argument for use in csh when the argument is being quoted.
+ * Returns a function to escape an argument for use in csh when the argument is
+ * being quoted.
  *
- * @param {string} arg The argument to escape.
- * @returns {string} The escaped argument.
+ * @returns {function(string): string} A function to escape arguments.
  */
-function escapeArgForQuoted$4(arg) {
-  return arg
-    .replace(/[\0\u0008\r\u001B\u009B]/gu, "")
-    .replace(/\n/gu, " ")
-    .replace(/'/gu, "'\\''")
-    .replace(/\\!$/gu, "\\\\!")
-    .replace(/!(?!$)/gu, "\\!");
+function getQuoteEscapeFunction$1() {
+  const controls = new RegExp$1("[\0\u0008\r\u001B\u009B]", "g");
+  const newlines = new RegExp$1("\n", "g");
+  const quotes = new RegExp$1("'", "g");
+  const history = new RegExp$1("!", "g");
+  return (arg) =>
+    arg
+      .replace(controls, "")
+      .replace(newlines, " ")
+      .replace(quotes, "'\\''")
+      .replace(history, "\\!");
 }
 
 /**
@@ -33494,31 +33754,28 @@ function quoteArg$4(arg) {
 /**
  * Returns a pair of functions to escape and quote arguments for use in csh.
  *
- * @returns {Function[]} A function pair to escape & quote arguments.
+ * @returns {(function(string): string)[]} A function pair to escape & quote arguments.
  */
-function getQuoteFunction$8() {
-  return [escapeArgForQuoted$4, quoteArg$4];
-}
-
-/**
- * Remove any prefix from the provided argument that might be interpreted as a
- * flag on Unix systems for csh.
- *
- * @param {string} arg The argument to update.
- * @returns {string} The updated argument.
- */
-function stripFlagPrefix$6(arg) {
-  return arg.replace(/^-+/gu, "");
+function getQuoteFunction$6() {
+  return [getQuoteEscapeFunction$1(), quoteArg$4];
 }
 
 /**
  * Returns a function to protect against flag injection for csh.
  *
- * @returns {Function} A function to protect against flag injection.
+ * @returns {function(string): string} A function to protect against flag injection.
  */
-function getFlagProtectionFunction$8() {
-  return stripFlagPrefix$6;
+function getFlagProtectionFunction$6() {
+  const leadingHyphens = new RegExp$1("^-+");
+  return (arg) => arg.replace(leadingHyphens, "");
 }
+
+var csh = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    getEscapeFunction: getEscapeFunction$6,
+    getFlagProtectionFunction: getFlagProtectionFunction$6,
+    getQuoteFunction: getQuoteFunction$6
+});
 
 /**
  * @overview Provides functionality for the Debian Almquist shell (Dash).
@@ -33531,13 +33788,13 @@ function getFlagProtectionFunction$8() {
  * @param {string} arg The argument to escape.
  * @returns {string} The escaped argument.
  */
-function escapeArg$5(arg) {
+function escapeArg$2(arg) {
   return arg
     .replace(/[\0\u0008\r\u001B\u009B]/gu, "")
     .replace(/\n/gu, " ")
     .replace(/\\/gu, "\\\\")
     .replace(/(?<=^|\s)([#~])/gu, "\\$1")
-    .replace(/(["$&'()*;<>?`|])/gu, "\\$1")
+    .replace(/(["$&'()*;<>?[\]`|])/gu, "\\$1")
     .replace(/([\t ])/gu, "\\$1");
 }
 
@@ -33545,10 +33802,10 @@ function escapeArg$5(arg) {
  * Returns a function to escape arguments for use in Dash for the given use
  * case.
  *
- * @returns {Function} A function to escape arguments.
+ * @returns {function(string): string} A function to escape arguments.
  */
-function getEscapeFunction$7() {
-  return escapeArg$5;
+function getEscapeFunction$5() {
+  return escapeArg$2;
 }
 
 /**
@@ -33557,7 +33814,7 @@ function getEscapeFunction$7() {
  * @param {string} arg The argument to escape.
  * @returns {string} The escaped argument.
  */
-function escapeArgForQuoted$3(arg) {
+function escapeArgForQuoted$2(arg) {
   return arg
     .replace(/[\0\u0008\u001B\u009B]/gu, "")
     .replace(/\r(?!\n)/gu, "")
@@ -33577,10 +33834,10 @@ function quoteArg$3(arg) {
 /**
  * Returns a pair of functions to escape and quote arguments for use in Dash.
  *
- * @returns {Function[]} A function pair to escape & quote arguments.
+ * @returns {(function(string): string)[]} A function pair to escape & quote arguments.
  */
-function getQuoteFunction$7() {
-  return [escapeArgForQuoted$3, quoteArg$3];
+function getQuoteFunction$5() {
+  return [escapeArgForQuoted$2, quoteArg$3];
 }
 
 /**
@@ -33590,23 +33847,31 @@ function getQuoteFunction$7() {
  * @param {string} arg The argument to update.
  * @returns {string} The updated argument.
  */
-function stripFlagPrefix$5(arg) {
+function stripFlagPrefix$2(arg) {
   return arg.replace(/^-+/gu, "");
 }
 
 /**
  * Returns a function to protect against flag injection for Dash.
  *
- * @returns {Function} A function to protect against flag injection.
+ * @returns {function(string): string} A function to protect against flag injection.
  */
-function getFlagProtectionFunction$7() {
-  return stripFlagPrefix$5;
+function getFlagProtectionFunction$5() {
+  return stripFlagPrefix$2;
 }
+
+var dash = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    getEscapeFunction: getEscapeFunction$5,
+    getFlagProtectionFunction: getFlagProtectionFunction$5,
+    getQuoteFunction: getQuoteFunction$5
+});
 
 /**
  * @overview Provides functionality for shell-less escaping on Unix systems.
  * @license MPL-2.0
  */
+
 
 /**
  * The error message for use of quoting functionality.
@@ -33617,28 +33882,21 @@ function getFlagProtectionFunction$7() {
 const unsupportedError$1 = "Quoting is not supported when no shell is used";
 
 /**
- * Escape an argument for shell-less use.
- *
- * @param {string} arg The argument to escape.
- * @returns {string} The escaped argument.
- */
-function escapeArg$4(arg) {
-  return arg.replace(/[\0\u0008\u001B\u009B]/gu, "").replace(/\r(?!\n)/gu, "");
-}
-
-/**
  * Returns a function to escape arguments for shell-less use.
  *
- * @returns {Function} A function to escape arguments.
+ * @returns {function(string): string} A function to escape arguments.
  */
-function getEscapeFunction$6() {
-  return escapeArg$4;
+function getEscapeFunction$4() {
+  const controls = new RegExp$1("[\0\u0008\u001B\u009B]", "g");
+  const crs = new RegExp$1("(?:(\r\n)|\r)", "g");
+  return (arg) => arg.replace(controls, "").replace(crs, "$1");
 }
 
 /**
  * Returns the provided value.
  *
- * @throws {Error} Always.
+ * @returns {never} Does not return.
+ * @throws {Error} Always throws an error.
  */
 function unsupported$1() {
   throw new Error(unsupportedError$1);
@@ -33647,31 +33905,28 @@ function unsupported$1() {
 /**
  * Returns a pair of functions that will indicate this operation is unsupported.
  *
- * @returns {Function[]} A pair of functions.
+ * @returns {(function(string): string)[]} A pair of functions.
  */
-function getQuoteFunction$6() {
+function getQuoteFunction$4() {
   return [unsupported$1, unsupported$1];
-}
-
-/**
- * Remove any prefix from the provided argument that might be interpreted as a
- * flag on Unix systems.
- *
- * @param {string} arg The argument to update.
- * @returns {string} The updated argument.
- */
-function stripFlagPrefix$4(arg) {
-  return arg.replace(/^-+/gu, "");
 }
 
 /**
  * Returns a function to protect against flag injection for Unix systems.
  *
- * @returns {Function} A function to protect against flag injection.
+ * @returns {function(string): string} A function to protect against flag injection.
  */
-function getFlagProtectionFunction$6() {
-  return stripFlagPrefix$4;
+function getFlagProtectionFunction$4() {
+  const leadingHyphens = new RegExp$1("^-+");
+  return (arg) => arg.replace(leadingHyphens, "");
 }
+
+var nosh$1 = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    getEscapeFunction: getEscapeFunction$4,
+    getFlagProtectionFunction: getFlagProtectionFunction$4,
+    getQuoteFunction: getQuoteFunction$4
+});
 
 /**
  * @overview Provides functionality for the Z shell (Zsh).
@@ -33684,7 +33939,7 @@ function getFlagProtectionFunction$6() {
  * @param {string} arg The argument to escape.
  * @returns {string} The escaped argument.
  */
-function escapeArg$3(arg) {
+function escapeArg$1(arg) {
   return arg
     .replace(/[\0\u0008\r\u001B\u009B]/gu, "")
     .replace(/\n/gu, " ")
@@ -33697,10 +33952,10 @@ function escapeArg$3(arg) {
 /**
  * Returns a function to escape arguments for use in Zsh for the given use case.
  *
- * @returns {Function} A function to escape arguments.
+ * @returns {function(string): string} A function to escape arguments.
  */
-function getEscapeFunction$5() {
-  return escapeArg$3;
+function getEscapeFunction$3() {
+  return escapeArg$1;
 }
 
 /**
@@ -33709,7 +33964,7 @@ function getEscapeFunction$5() {
  * @param {string} arg The argument to escape.
  * @returns {string} The escaped argument.
  */
-function escapeArgForQuoted$2(arg) {
+function escapeArgForQuoted$1(arg) {
   return arg
     .replace(/[\0\u0008\u001B\u009B]/gu, "")
     .replace(/\r(?!\n)/gu, "")
@@ -33729,10 +33984,10 @@ function quoteArg$2(arg) {
 /**
  * Returns a pair of functions to escape and quote arguments for use in Zsh.
  *
- * @returns {Function[]} A function pair to escape & quote arguments.
+ * @returns {(function(string): string)[]} A function pair to escape & quote arguments.
  */
-function getQuoteFunction$5() {
-  return [escapeArgForQuoted$2, quoteArg$2];
+function getQuoteFunction$3() {
+  return [escapeArgForQuoted$1, quoteArg$2];
 }
 
 /**
@@ -33742,18 +33997,25 @@ function getQuoteFunction$5() {
  * @param {string} arg The argument to update.
  * @returns {string} The updated argument.
  */
-function stripFlagPrefix$3(arg) {
+function stripFlagPrefix$1(arg) {
   return arg.replace(/^-+/gu, "");
 }
 
 /**
  * Returns a function to protect against flag injection for Zsh.
  *
- * @returns {Function} A function to protect against flag injection.
+ * @returns {function(string): string} A function to protect against flag injection.
  */
-function getFlagProtectionFunction$5() {
-  return stripFlagPrefix$3;
+function getFlagProtectionFunction$3() {
+  return stripFlagPrefix$1;
 }
+
+var zsh = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    getEscapeFunction: getEscapeFunction$3,
+    getFlagProtectionFunction: getFlagProtectionFunction$3,
+    getQuoteFunction: getQuoteFunction$3
+});
 
 /**
  * @overview Provides functionality for Unix systems.
@@ -33770,12 +34032,28 @@ function getFlagProtectionFunction$5() {
 const binBash = "bash";
 
 /**
+ * The name of the BusyBox binary.
+ *
+ * @constant
+ * @type {string}
+ */
+const binBusyBox = "busybox";
+
+/**
  * The name of the C shell (csh) binary.
  *
  * @constant
  * @type {string}
  */
 const binCsh = "csh";
+
+/**
+ * An alternative name for the C shell (csh) binary.
+ *
+ * @constant
+ * @type {string}
+ */
+const binCshBsd = "bsd-csh";
 
 /**
  * The name of the Debian Almquist shell (Dash) binary.
@@ -33806,80 +34084,32 @@ function getDefaultShell$1() {
 }
 
 /**
- * Returns a function to escape arguments for use in a particular shell.
+ * Returns the helper functions to handle arguments for use with a particular
+ * shell.
  *
- * @param {string | symbol} shellName The name of a Unix shell.
- * @returns {Function | undefined} A function to escape arguments.
+ * @param {string | symbol} shellName The identifier of a Unix shell.
+ * @returns {object} A set of functions to escape arguments.
  */
-function getEscapeFunction$4(shellName) {
+function getShellHelpers$1(shellName) {
   switch (shellName) {
     case noShell: {
-      return getEscapeFunction$6();
+      return nosh$1;
     }
     case binBash: {
-      return getEscapeFunction$9();
+      return bash;
     }
-    case binCsh: {
-      return getEscapeFunction$8();
+    case binBusyBox: {
+      return busybox;
     }
-    case binDash: {
-      return getEscapeFunction$7();
-    }
-    case binZsh: {
-      return getEscapeFunction$5();
-    }
-  }
-}
-
-/**
- * Returns a pair of functions to escape and quote arguments for use in a
- * particular shell.
- *
- * @param {string | symbol} shellName The name of a Unix shell.
- * @returns {Function[] | undefined} A function pair to escape & quote arguments.
- */
-function getQuoteFunction$4(shellName) {
-  switch (shellName) {
-    case noShell: {
-      return getQuoteFunction$6();
-    }
-    case binBash: {
-      return getQuoteFunction$9();
-    }
-    case binCsh: {
-      return getQuoteFunction$8();
+    case binCsh:
+    case binCshBsd: {
+      return csh;
     }
     case binDash: {
-      return getQuoteFunction$7();
+      return dash;
     }
     case binZsh: {
-      return getQuoteFunction$5();
-    }
-  }
-}
-
-/**
- * Returns a function to protect against flag injection.
- *
- * @param {string | symbol} shellName The name of a Unix shell.
- * @returns {Function | undefined} A function to protect against flag injection.
- */
-function getFlagProtectionFunction$4(shellName) {
-  switch (shellName) {
-    case noShell: {
-      return getFlagProtectionFunction$6();
-    }
-    case binBash: {
-      return getFlagProtectionFunction$9();
-    }
-    case binCsh: {
-      return getFlagProtectionFunction$8();
-    }
-    case binDash: {
-      return getFlagProtectionFunction$7();
-    }
-    case binZsh: {
-      return getFlagProtectionFunction$5();
+      return zsh;
     }
   }
 }
@@ -33891,13 +34121,13 @@ function getFlagProtectionFunction$4(shellName) {
  * @param {Object<string, string>} args.env The environment variables.
  * @param {string} args.shell The name or path of the shell.
  * @param {object} deps The dependencies for this function.
- * @param {Function} deps.resolveExecutable Resolve the path to an executable.
+ * @param {function(): string} deps.resolveExecutable Resolve the path to an executable.
  * @returns {string} The shell name.
  */
 function getShellName$1({ env, shell }, { resolveExecutable }) {
   shell = resolveExecutable(
     { env, executable: shell },
-    { exists: fs$1.existsSync, readlink: fs$1.readlinkSync, which: which.sync },
+    { exists: existsSync, readlink: readlinkSync, which: which.sync },
   );
 
   const shellName = path.basename(shell);
@@ -33911,15 +34141,13 @@ function getShellName$1({ env, shell }, { resolveExecutable }) {
  * @returns {boolean} `true` if the shell is supported, `false` otherwise.
  */
 function isShellSupported$1(shellName) {
-  return getEscapeFunction$4(shellName) !== undefined;
+  return getShellHelpers$1(shellName) !== undefined;
 }
 
 var unix = /*#__PURE__*/Object.freeze({
     __proto__: null,
     getDefaultShell: getDefaultShell$1,
-    getEscapeFunction: getEscapeFunction$4,
-    getFlagProtectionFunction: getFlagProtectionFunction$4,
-    getQuoteFunction: getQuoteFunction$4,
+    getShellHelpers: getShellHelpers$1,
     getShellName: getShellName$1,
     isShellSupported: isShellSupported$1
 });
@@ -33929,37 +34157,45 @@ var unix = /*#__PURE__*/Object.freeze({
  * @license MPL-2.0
  */
 
-/**
- * Escape an argument for use in CMD.
- *
- * @param {string} arg The argument to escape.
- * @returns {string} The escaped argument.
- */
-function escapeArg$2(arg) {
-  return arg
-    .replace(/[\0\u0008\r\u001B\u009B]/gu, "")
-    .replace(/\n/gu, " ")
-    .replace(/(?<!\\)(\\*)"/gu, '$1$1\\"')
-    .replace(/(["%&<>^|])/gu, "^$1");
-}
 
 /**
  * Returns a function to escape arguments for use in CMD for the given use case.
  *
- * @returns {Function} A function to escape arguments.
+ * @returns {function(string): string} A function to escape arguments.
  */
-function getEscapeFunction$3() {
-  return escapeArg$2;
+function getEscapeFunction$2() {
+  const controls = new RegExp$1("[\0\u0008\r\u001B\u009B]", "g");
+  const newlines = new RegExp$1("\n", "g");
+  const specials = new RegExp$1("([%&<>^|])", "g");
+  const quotes = new RegExp$1('"', "g");
+  const backslashes = new RegExp$1("(^|[^\\\\])(\\\\*)\0", "g");
+  return (arg) =>
+    arg
+      .replace(controls, "")
+      .replace(newlines, " ")
+      .replace(specials, "^$1")
+      .replace(quotes, '\0\\^"')
+      .replace(backslashes, "$1$2$2");
 }
 
 /**
  * Escape an argument for use in CMD when the argument is being quoted.
  *
- * @param {string} arg The argument to escape.
- * @returns {string} The escaped argument.
+ * @returns {function(string): string} A function to escape arguments.
  */
-function escapeArgForQuoted$1(arg) {
-  return escapeArg$2(arg).replace(/(?<!\\)(\\*)([\t ])/gu, "$1$1$2");
+function getQuoteEscapeFunction() {
+  const controls = new RegExp$1("[\0\u0008\r\u001B\u009B]", "g");
+  const newlines = new RegExp$1("\n", "g");
+  const quotes = new RegExp$1('"', "g");
+  const specials = new RegExp$1("([%&<>^|])", "g");
+  const backslashes = new RegExp$1('(^|[^\\\\])(\\\\+)("|$)', "g");
+  return (arg) =>
+    arg
+      .replace(controls, "")
+      .replace(newlines, " ")
+      .replace(quotes, '""')
+      .replace(specials, '"^$1"')
+      .replace(backslashes, "$1$2$2$3");
 }
 
 /**
@@ -33969,42 +34205,40 @@ function escapeArgForQuoted$1(arg) {
  * @returns {string} The quoted argument.
  */
 function quoteArg$1(arg) {
-  return arg.replace(/([\t ]+)/gu, '"$1"');
+  return `"${arg}"`;
 }
 
 /**
  * Returns a pair of functions to escape and quote arguments for use in CMD.
  *
- * @returns {Function[]} A function pair to escape & quote arguments.
+ * @returns {(function(string): string)[]} A function pair to escape & quote arguments.
  */
-function getQuoteFunction$3() {
-  return [escapeArgForQuoted$1, quoteArg$1];
-}
-
-/**
- * Remove any prefix from the provided argument that might be interpreted as a
- * flag on Windows systems for CMD.
- *
- * @param {string} arg The argument to update.
- * @returns {string} The updated argument.
- */
-function stripFlagPrefix$2(arg) {
-  return arg.replace(/^(?:-+|\/+)/gu, "");
+function getQuoteFunction$2() {
+  return [getQuoteEscapeFunction(), quoteArg$1];
 }
 
 /**
  * Returns a function to protect against flag injection for CMD.
  *
- * @returns {Function} A function to protect against flag injection.
+ * @returns {function(string): string} A function to protect against flag injection.
  */
-function getFlagProtectionFunction$3() {
-  return stripFlagPrefix$2;
+function getFlagProtectionFunction$2() {
+  const leadingHyphensAndSlashes = new RegExp$1("^(?:-+|/+)");
+  return (arg) => arg.replace(leadingHyphensAndSlashes, "");
 }
+
+var cmd = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    getEscapeFunction: getEscapeFunction$2,
+    getFlagProtectionFunction: getFlagProtectionFunction$2,
+    getQuoteFunction: getQuoteFunction$2
+});
 
 /**
  * @overview Provides functionality for shell-less escaping on Windows systems.
  * @license MPL-2.0
  */
+
 
 /**
  * The error message for use of quoting functionality.
@@ -34015,28 +34249,21 @@ function getFlagProtectionFunction$3() {
 const unsupportedError = "Quoting is not supported when no shell is used";
 
 /**
- * Escape an argument for shell-less use.
- *
- * @param {string} arg The argument to escape.
- * @returns {string} The escaped argument.
- */
-function escapeArg$1(arg) {
-  return arg.replace(/[\0\u0008\u001B\u009B]/gu, "").replace(/\r(?!\n)/gu, "");
-}
-
-/**
  * Returns a function to escape arguments for shell-less use.
  *
- * @returns {Function} A function to escape arguments.
+ * @returns {function(string): string} A function to escape arguments.
  */
-function getEscapeFunction$2() {
-  return escapeArg$1;
+function getEscapeFunction$1() {
+  const controls = new RegExp$1("[\0\u0008\u001B\u009B]", "g");
+  const crs = new RegExp$1("(?:(\r\n)|\r)", "g");
+  return (arg) => arg.replace(controls, "").replace(crs, "$1");
 }
 
 /**
  * Returns the provided value.
  *
- * @throws {Error} Always.
+ * @returns {never} Does not return.
+ * @throws {Error} Always throws an error.
  */
 function unsupported() {
   throw new Error(unsupportedError);
@@ -34045,31 +34272,28 @@ function unsupported() {
 /**
  * Returns a pair of functions that will indicate this operation is unsupported.
  *
- * @returns {Function[]} A pair of functions.
+ * @returns {(function(string): string)[]} A pair of functions.
  */
-function getQuoteFunction$2() {
+function getQuoteFunction$1() {
   return [unsupported, unsupported];
-}
-
-/**
- * Remove any prefix from the provided argument that might be interpreted as a
- * flag on Windows systems.
- *
- * @param {string} arg The argument to update.
- * @returns {string} The updated argument.
- */
-function stripFlagPrefix$1(arg) {
-  return arg.replace(/^(?:-+|\/+)/gu, "");
 }
 
 /**
  * Returns a function to protect against flag injection for Windows systems.
  *
- * @returns {Function} A function to protect against flag injection.
+ * @returns {function(string): string} A function to protect against flag injection.
  */
-function getFlagProtectionFunction$2() {
-  return stripFlagPrefix$1;
+function getFlagProtectionFunction$1() {
+  const leadingHyphensAndSlashes = new RegExp$1("^(?:-+|/+)");
+  return (arg) => arg.replace(leadingHyphensAndSlashes, "");
 }
+
+var nosh = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    getEscapeFunction: getEscapeFunction$1,
+    getFlagProtectionFunction: getFlagProtectionFunction$1,
+    getQuoteFunction: getQuoteFunction$1
+});
 
 /**
  * @overview Provides functionality for Windows PowerShell.
@@ -34108,9 +34332,9 @@ function escapeArg(arg) {
  * Returns a function to escape arguments for use in PowerShell for the given
  * use case.
  *
- * @returns {Function} A function to escape arguments.
+ * @returns {function(string): string} A function to escape arguments.
  */
-function getEscapeFunction$1() {
+function getEscapeFunction() {
   return escapeArg;
 }
 
@@ -34151,9 +34375,9 @@ function quoteArg(arg) {
  * Returns a pair of functions to escape and quote arguments for use in
  * PowerShell.
  *
- * @returns {Function[]} A function pair to escape & quote arguments.
+ * @returns {(function(string): string)[]} A function pair to escape & quote arguments.
  */
-function getQuoteFunction$1() {
+function getQuoteFunction() {
   return [escapeArgForQuoted, quoteArg];
 }
 
@@ -34171,11 +34395,18 @@ function stripFlagPrefix(arg) {
 /**
  * Returns a function to protect against flag injection for PowerShell.
  *
- * @returns {Function} A function to protect against flag injection.
+ * @returns {function(string): string} A function to protect against flag injection.
  */
-function getFlagProtectionFunction$1() {
+function getFlagProtectionFunction() {
   return stripFlagPrefix;
 }
+
+var powershell = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    getEscapeFunction: getEscapeFunction,
+    getFlagProtectionFunction: getFlagProtectionFunction,
+    getQuoteFunction: getQuoteFunction
+});
 
 /**
  * @overview Provides functionality for Windows systems.
@@ -34219,65 +34450,23 @@ function getDefaultShell({ env }) {
 }
 
 /**
- * Returns a function to escape arguments for use in a particular shell.
+ * Returns the helper functions to handle arguments for use with a particular
+ * shell.
  *
- * @param {string | symbol} shellName The name of a Windows shell.
- * @returns {Function | undefined} A function to escape arguments.
+ * @param {string | symbol} shellName The identifier of a Windows shell.
+ * @returns {object} A set of functions to escape arguments.
  */
-function getEscapeFunction(shellName) {
+function getShellHelpers(shellName) {
   if (shellName === noShell) {
-    return getEscapeFunction$2();
+    return nosh;
   }
 
   switch (shellName.toLowerCase()) {
     case binCmd: {
-      return getEscapeFunction$3();
+      return cmd;
     }
     case binPowerShell: {
-      return getEscapeFunction$1();
-    }
-  }
-}
-
-/**
- * Returns a pair of functions to escape and quote arguments for use in a
- * particular shell.
- *
- * @param {string | symbol} shellName The name of a Windows shell.
- * @returns {Function[] | undefined} A function pair to escape & quote arguments.
- */
-function getQuoteFunction(shellName) {
-  if (shellName === noShell) {
-    return getQuoteFunction$2();
-  }
-
-  switch (shellName.toLowerCase()) {
-    case binCmd: {
-      return getQuoteFunction$3();
-    }
-    case binPowerShell: {
-      return getQuoteFunction$1();
-    }
-  }
-}
-
-/**
- * Returns a function to protect against flag injection.
- *
- * @param {string | symbol} shellName The name of a Windows shell.
- * @returns {Function | undefined} A function to protect against flag injection.
- */
-function getFlagProtectionFunction(shellName) {
-  if (shellName === noShell) {
-    return getFlagProtectionFunction$2();
-  }
-
-  switch (shellName.toLowerCase()) {
-    case binCmd: {
-      return getFlagProtectionFunction$3();
-    }
-    case binPowerShell: {
-      return getFlagProtectionFunction$1();
+      return powershell;
     }
   }
 }
@@ -34289,13 +34478,13 @@ function getFlagProtectionFunction(shellName) {
  * @param {Object<string, string>} args.env The environment variables.
  * @param {string} args.shell The name or path of the shell.
  * @param {object} deps The dependencies for this function.
- * @param {Function} deps.resolveExecutable Resolve the path to an executable.
+ * @param {function(): string} deps.resolveExecutable Resolve the path to an executable.
  * @returns {string} The shell name.
  */
 function getShellName({ env, shell }, { resolveExecutable }) {
   shell = resolveExecutable(
     { env, executable: shell },
-    { exists: fs$1.existsSync, readlink: fs$1.readlinkSync, which: which.sync },
+    { exists: existsSync, readlink: readlinkSync, which: which.sync },
   );
 
   const shellName = path.win32.basename(shell);
@@ -34309,15 +34498,13 @@ function getShellName({ env, shell }, { resolveExecutable }) {
  * @returns {boolean} `true` if the shell is supported, `false` otherwise.
  */
 function isShellSupported(shellName) {
-  return getEscapeFunction(shellName) !== undefined;
+  return getShellHelpers(shellName) !== undefined;
 }
 
 var win = /*#__PURE__*/Object.freeze({
     __proto__: null,
     getDefaultShell: getDefaultShell,
-    getEscapeFunction: getEscapeFunction,
-    getFlagProtectionFunction: getFlagProtectionFunction,
-    getQuoteFunction: getQuoteFunction,
+    getShellHelpers: getShellHelpers,
     getShellName: getShellName,
     isShellSupported: isShellSupported
 });
@@ -34388,7 +34575,7 @@ function getHelpersByPlatform({ env, platform }) {
  *
  * @overview Entrypoint for the library.
  * @module shescape
- * @version 2.1.3
+ * @version 2.1.10
  * @license MPL-2.0
  */
 
@@ -34433,6 +34620,9 @@ function getHelpersByPlatform({ env, platform }) {
  * );
  */
 class Shescape {
+  #escape;
+  #quote;
+
   /**
    * Create a new {@link Shescape} instance.
    *
@@ -34443,29 +34633,33 @@ class Shescape {
    * @since 2.0.0
    */
   constructor(options = {}) {
-    const platform = os$1.platform();
-    const helpers = getHelpersByPlatform({ env: process$1.env, platform });
+    const platform = getHelpersByPlatform({
+      env: process$1.env,
+      platform: os$1.platform(),
+    });
 
-    options = parseOptions({ env: process$1.env, options }, helpers);
+    options = parseOptions({ env: process$1.env, options }, platform);
     const { flagProtection, shellName } = options;
 
+    const shell = platform.getShellHelpers(shellName);
+
     {
-      const escape = helpers.getEscapeFunction(shellName);
+      const escape = shell.getEscapeFunction();
       if (flagProtection) {
-        const flagProtect = helpers.getFlagProtectionFunction(shellName);
-        this._escape = (arg) => flagProtect(escape(arg));
+        const flagProtect = shell.getFlagProtectionFunction();
+        this.#escape = (arg) => flagProtect(escape(arg));
       } else {
-        this._escape = escape;
+        this.#escape = escape;
       }
     }
 
     {
-      const [escape, quote] = helpers.getQuoteFunction(shellName);
+      const [escape, quote] = shell.getQuoteFunction();
       if (flagProtection) {
-        const flagProtect = helpers.getFlagProtectionFunction(shellName);
-        this._quote = (arg) => quote(flagProtect(escape(arg)));
+        const flagProtect = shell.getFlagProtectionFunction();
+        this.#quote = (arg) => quote(flagProtect(escape(arg)));
       } else {
-        this._quote = (arg) => quote(escape(arg));
+        this.#quote = (arg) => quote(escape(arg));
       }
     }
   }
@@ -34482,14 +34676,15 @@ class Shescape {
    */
   escape(arg) {
     const argAsString = checkedToString(arg);
-    return this._escape(argAsString);
+    return this.#escape(argAsString);
   }
 
   /**
    * Take an array of values, the arguments, and escape any dangerous characters
    * in every argument.
    *
-   * Non-string inputs will be converted to strings using a `toString()` method.
+   * Non-array inputs are rejected. Non-string entries will be converted to
+   * strings using a `toString()` method.
    *
    * @param {string[]} args The arguments to escape.
    * @returns {string[]} The escaped arguments.
@@ -34498,6 +34693,7 @@ class Shescape {
    * @since 2.0.0
    */
   escapeAll(args) {
+    ensureArray(args);
     return args.map((arg) => this.escape(arg));
   }
 
@@ -34515,14 +34711,15 @@ class Shescape {
    */
   quote(arg) {
     const argAsString = checkedToString(arg);
-    return this._quote(argAsString);
+    return this.#quote(argAsString);
   }
 
   /**
    * Take an array of values, the arguments, put shell-specific quotes around
    * every argument and escape any dangerous characters in every argument.
    *
-   * Non-string inputs will be converted to strings using a `toString()` method.
+   * Non-array inputs are rejected. Non-string entries will be converted to
+   * strings using a `toString()` method.
    *
    * @param {string[]} args The arguments to quote and escape.
    * @returns {string[]} The quoted and escaped arguments.
@@ -34532,6 +34729,7 @@ class Shescape {
    * @since 2.0.0
    */
   quoteAll(args) {
+    ensureArray(args);
     return args.map((arg) => this.quote(arg));
   }
 }
