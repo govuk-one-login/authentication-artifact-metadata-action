@@ -3,7 +3,7 @@ import os__default, { EOL } from 'os';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import { promises, existsSync as existsSync$1, readFileSync } from 'fs';
-import path$1 from 'path';
+import path$2 from 'path';
 import http from 'http';
 import https from 'https';
 import 'net';
@@ -20,6 +20,7 @@ import process$1 from 'node:process';
 import * as path from 'node:path';
 import * as fs$1 from 'node:fs';
 import { TextEncoder as TextEncoder$1 } from 'node:util';
+import * as path$1 from 'node:path/win32';
 
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -33171,7 +33172,7 @@ const typeofString = "string";
  * @returns {boolean} `true` if property is an own-property, `false` otherwise.
  */
 function hasOwn(object, property) {
-  return Object.prototype.hasOwnProperty.call(object, property);
+  return Object.hasOwn(object, property);
 }
 
 /**
@@ -33334,17 +33335,6 @@ function resolveExecutable(
 const noShell = Symbol();
 
 /**
- * Check if the Node.js version is before v22.0.0.
- *
- * @param {string} version The `process.version` value.
- * @returns {boolean} `true` if version is before v22.0.0, `false` otherwise.
- */
-function isBeforeNode22(version) {
-  const [major] = version.replace("v", "").split(".");
-  return Number.parseInt(major, 10) < 22;
-}
-
-/**
  * Parses the `flagProtection` option.
  *
  * @param {object} args The arguments for this function.
@@ -33368,7 +33358,6 @@ function parseFlagProtection({ options }) {
  * @param {object} args The arguments for this function.
  * @param {Object<string, string>} args.env The environment variables.
  * @param {object} args.options The options for escaping.
- * @param {string} args.version The Node.js version.
  * @param {object} deps The dependencies for this function.
  * @param {function(): string} deps.getDefaultShell Function to get the default shell.
  * @param {function(): string} deps.getShellName Function to get the name of a shell.
@@ -33377,13 +33366,10 @@ function parseFlagProtection({ options }) {
  * @throws {Error} The shell is not supported or could not be found.
  */
 function parseShell(
-  { env, options, version },
+  { env, options },
   { getDefaultShell, getShellName, isShellSupported },
 ) {
-  let shell =
-    hasOwn(options, "shell") || isBeforeNode22(version)
-      ? options.shell
-      : undefined;
+  let shell = hasOwn(options, "shell") ? options.shell : undefined;
   let shellName = noShell;
 
   if (shell !== false) {
@@ -33407,7 +33393,6 @@ function parseShell(
  * @param {object} args The arguments for this function.
  * @param {Object<string, string>} args.env The environment variables.
  * @param {object} args.options The options for escaping.
- * @param {string} args.version The Node.js version.
  * @param {object} deps The dependencies for this function.
  * @param {function(): string} deps.getDefaultShell Function to get the default shell.
  * @param {function(): string} deps.getShellName Function to get the name of a shell.
@@ -33451,7 +33436,7 @@ function requireLib () {
 	if (hasRequiredLib) return lib;
 	hasRequiredLib = 1;
 	const { isexe, sync: isexeSync } = requireIndex_min();
-	const { join, delimiter, sep, posix } = path$1;
+	const { join, delimiter, sep, posix } = path$2;
 
 	const isWindows = process.platform === 'win32';
 
@@ -33643,7 +33628,7 @@ const unsupportedError = "Quoting is not supported when no shell is used";
 function getEscapeFunction$7() {
   const controls = new RegExp$1(/[\0\u0008\u001B\u009B]/g);
   const crs = new RegExp$1(/(\r\n)|\r/g);
-  return (arg) => arg.replace(controls, "").replace(crs, "$1");
+  return (arg) => arg.replaceAll(controls, "").replaceAll(crs, "$1");
 }
 
 /**
@@ -33693,13 +33678,13 @@ function getEscapeFunction$6() {
   const whitespace = new RegExp$1(/([\t ])/g);
   return (arg) =>
     arg
-      .replace(controls, "")
-      .replace(newlines, " ")
-      .replace(backslashes, "\\\\")
-      .replace(comments, "$1\\#")
-      .replace(home, "$1\\~")
-      .replace(specials, "\\$1")
-      .replace(whitespace, "\\$1");
+      .replaceAll(controls, "")
+      .replaceAll(newlines, " ")
+      .replaceAll(backslashes, "\\\\")
+      .replaceAll(comments, "$1\\#")
+      .replaceAll(home, "$1\\~")
+      .replaceAll(specials, "\\$1")
+      .replaceAll(whitespace, "\\$1");
 }
 
 /**
@@ -33713,7 +33698,10 @@ function getQuoteEscapeFunction$6() {
   const crs = new RegExp$1(/(\r\n)|\r/g);
   const quotes = new RegExp$1(/'/g);
   return (arg) =>
-    arg.replace(controls, "").replace(crs, "$1").replace(quotes, "'\\''");
+    arg
+      .replaceAll(controls, "")
+      .replaceAll(crs, "$1")
+      .replaceAll(quotes, "'\\''");
 }
 
 /**
@@ -33763,13 +33751,13 @@ function getEscapeFunction$5() {
   const whitespace = new RegExp$1(/([\t ])/g);
   return (arg) =>
     arg
-      .replace(controls, "")
-      .replace(newlines, " ")
-      .replace(backslashes, "\\\\")
-      .replace(comments, "$1\\#")
-      .replace(home, "$1\\~")
-      .replace(specials, "\\$1")
-      .replace(whitespace, "\\$1");
+      .replaceAll(controls, "")
+      .replaceAll(newlines, " ")
+      .replaceAll(backslashes, "\\\\")
+      .replaceAll(comments, "$1\\#")
+      .replaceAll(home, "$1\\~")
+      .replaceAll(specials, "\\$1")
+      .replaceAll(whitespace, "\\$1");
 }
 
 /**
@@ -33783,7 +33771,10 @@ function getQuoteEscapeFunction$5() {
   const crs = new RegExp$1(/(\r\n)|\r/g);
   const quotes = new RegExp$1(/'/g);
   return (arg) =>
-    arg.replace(controls, "").replace(crs, "$1").replace(quotes, "'\\''");
+    arg
+      .replaceAll(controls, "")
+      .replaceAll(crs, "$1")
+      .replaceAll(quotes, "'\\''");
 }
 
 /**
@@ -33835,13 +33826,13 @@ function getEscapeFunction$4() {
   const textEncoder = new TextEncoder$1();
   return (arg) =>
     arg
-      .replace(controls, "")
-      .replace(newlines, " ")
-      .replace(backslashes, "\\\\")
-      .replace(home, "$1\\~")
-      .replace(history, "\\!")
-      .replace(specials, "\\$1")
-      .replace(whitespace, "\\$1")
+      .replaceAll(controls, "")
+      .replaceAll(newlines, " ")
+      .replaceAll(backslashes, "\\\\")
+      .replaceAll(home, "$1\\~")
+      .replaceAll(history, "\\!")
+      .replaceAll(specials, "\\$1")
+      .replaceAll(whitespace, "\\$1")
       .split("")
       .map(
         // Due to a bug in C shell version 20110502-7, when a character whose
@@ -33867,10 +33858,10 @@ function getQuoteEscapeFunction$4() {
   const history = new RegExp$1(/!/g);
   return (arg) =>
     arg
-      .replace(controls, "")
-      .replace(newlines, " ")
-      .replace(quotes, "'\\''")
-      .replace(history, "\\!");
+      .replaceAll(controls, "")
+      .replaceAll(newlines, " ")
+      .replaceAll(quotes, "'\\''")
+      .replaceAll(history, "\\!");
 }
 
 /**
@@ -33920,13 +33911,13 @@ function getEscapeFunction$3() {
   const whitespace = new RegExp$1(/([\t ])/g);
   return (arg) =>
     arg
-      .replace(controls, "")
-      .replace(newlines, " ")
-      .replace(backslashes, "\\\\")
-      .replace(comments, "$1\\#")
-      .replace(home, "$1\\~")
-      .replace(specials, "\\$1")
-      .replace(whitespace, "\\$1");
+      .replaceAll(controls, "")
+      .replaceAll(newlines, " ")
+      .replaceAll(backslashes, "\\\\")
+      .replaceAll(comments, "$1\\#")
+      .replaceAll(home, "$1\\~")
+      .replaceAll(specials, "\\$1")
+      .replaceAll(whitespace, "\\$1");
 }
 
 /**
@@ -33940,7 +33931,10 @@ function getQuoteEscapeFunction$3() {
   const crs = new RegExp$1(/(\r\n)|\r/g);
   const quotes = new RegExp$1(/'/g);
   return (arg) =>
-    arg.replace(controls, "").replace(crs, "$1").replace(quotes, "'\\''");
+    arg
+      .replaceAll(controls, "")
+      .replaceAll(crs, "$1")
+      .replaceAll(quotes, "'\\''");
 }
 
 /**
@@ -33990,13 +33984,13 @@ function getEscapeFunction$2() {
   const whitespace = new RegExp$1(/([\t ])/g);
   return (arg) =>
     arg
-      .replace(controls, "")
-      .replace(newlines, " ")
-      .replace(backslashes, "\\\\")
-      .replace(comments, "$1\\#")
-      .replace(expansions, "$1\\$2")
-      .replace(specials, "\\$1")
-      .replace(whitespace, "\\$1");
+      .replaceAll(controls, "")
+      .replaceAll(newlines, " ")
+      .replaceAll(backslashes, "\\\\")
+      .replaceAll(comments, "$1\\#")
+      .replaceAll(expansions, "$1\\$2")
+      .replaceAll(specials, "\\$1")
+      .replaceAll(whitespace, "\\$1");
 }
 
 /**
@@ -34010,7 +34004,10 @@ function getQuoteEscapeFunction$2() {
   const crs = new RegExp$1(/(\r\n)|\r/g);
   const quotes = new RegExp$1(/'/g);
   return (arg) =>
-    arg.replace(controls, "").replace(crs, "$1").replace(quotes, "'\\''");
+    arg
+      .replaceAll(controls, "")
+      .replaceAll(crs, "$1")
+      .replaceAll(quotes, "'\\''");
 }
 
 /**
@@ -34205,11 +34202,11 @@ function getEscapeFunction$1() {
   const backslashes = new RegExp$1(/(^|[^\\])(\\*)\0/g);
   return (arg) =>
     arg
-      .replace(controls, "")
-      .replace(newlines, " ")
-      .replace(specials, "^$1")
-      .replace(quotes, '\0\\^"')
-      .replace(backslashes, "$1$2$2");
+      .replaceAll(controls, "")
+      .replaceAll(newlines, " ")
+      .replaceAll(specials, "^$1")
+      .replaceAll(quotes, '\0\\^"')
+      .replaceAll(backslashes, "$1$2$2");
 }
 
 /**
@@ -34226,11 +34223,11 @@ function getQuoteEscapeFunction$1() {
   const backslashes = new RegExp$1(/(^|[^\\])(\\+)("|$)/g);
   return (arg) =>
     arg
-      .replace(controls, "")
-      .replace(newlines, " ")
-      .replace(quotes, '""')
-      .replace(specials, '"^$1"')
-      .replace(backslashes, "$1$2$2$3");
+      .replaceAll(controls, "")
+      .replaceAll(newlines, " ")
+      .replaceAll(quotes, '""')
+      .replaceAll(specials, '"^$1"')
+      .replaceAll(backslashes, "$1$2$2$3");
 }
 
 /**
@@ -34288,25 +34285,25 @@ function getEscapeFunction() {
 
   return (arg) => {
     arg = arg
-      .replace(controls, "")
-      .replace(newlines, " ")
-      .replace(backticks, "``")
-      .replace(redirects, "$1$2`$3")
-      .replace(specials1, "$1`$2")
-      .replace(specials2, "`$1");
+      .replaceAll(controls, "")
+      .replaceAll(newlines, " ")
+      .replaceAll(backticks, "``")
+      .replaceAll(redirects, "$1$2`$3")
+      .replaceAll(specials1, "$1`$2")
+      .replaceAll(specials2, "`$1");
 
     if (whitespace.test(arg.replace(whitespacePrefix, ""))) {
       arg = arg
-        .replace(quote, '\0`"`"')
-        .replace(backslashBeforeQuote, "$1$2$2")
+        .replaceAll(quote, '\0`"`"')
+        .replaceAll(backslashBeforeQuote, "$1$2$2")
         .replace(backslashSuffix, "$1$2$2");
     } else {
       arg = arg
-        .replace(quote, '\0\\`"')
-        .replace(backslashBeforeQuote, "$1$2$2");
+        .replaceAll(quote, '\0\\`"')
+        .replaceAll(backslashBeforeQuote, "$1$2$2");
     }
 
-    arg = arg.replace(whitespace, "`$1");
+    arg = arg.replaceAll(whitespace, "`$1");
 
     return arg;
   };
@@ -34331,15 +34328,20 @@ function getQuoteEscapeFunction() {
   const backslashSuffix = new RegExp$1(/([^\\])(\\+)$/);
 
   return (arg) => {
-    arg = arg.replace(controls, "").replace(crs, "$1").replace(quotes, "$1$1");
+    arg = arg
+      .replaceAll(controls, "")
+      .replaceAll(crs, "$1")
+      .replaceAll(quotes, "$1$1");
 
     if (whitespace.test(arg)) {
       arg = arg
-        .replace(quote, '\0""')
-        .replace(backslashBeforeQuote, "$1$2$2")
+        .replaceAll(quote, '\0""')
+        .replaceAll(backslashBeforeQuote, "$1$2$2")
         .replace(backslashSuffix, "$1$2$2");
     } else {
-      arg = arg.replace(quote, '\0\\"').replace(backslashBeforeQuote, "$1$2$2");
+      arg = arg
+        .replaceAll(quote, '\0\\"')
+        .replaceAll(backslashBeforeQuote, "$1$2$2");
     }
 
     return arg;
@@ -34462,7 +34464,7 @@ function getShellName({ env, shell }, { resolveExecutable }) {
     { exists: existsSync, readlink: readlinkSync, which: which.sync },
   );
 
-  const shellName = path.win32.basename(shell);
+  const shellName = path$1.basename(shell);
   return shellName;
 }
 
@@ -34551,7 +34553,7 @@ function getHelpersByPlatform({ env, platform }) {
  *
  * @overview Entrypoint for the library.
  * @module shescape
- * @version 2.1.13
+ * @version 3.0.0
  * @license MPL-2.0
  */
 
@@ -34614,10 +34616,7 @@ class Shescape {
       platform: os$1.platform(),
     });
 
-    options = parseOptions(
-      { env: process$1.env, options, version: process$1.version },
-      platform,
-    );
+    options = parseOptions({ env: process$1.env, options }, platform);
     const { flagProtection, shellName } = options;
 
     const shell = platform.getShellHelpers(shellName);
